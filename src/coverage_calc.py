@@ -20,6 +20,20 @@ class ExecutionResult:
         covered_lines = len(self.total_lines) - len(self.missing_lines)
         return covered_lines / len(self.total_lines) if len(self.total_lines) > 0 else 0.0
     
+    def similar_executed_or_ignored(self, other: "ExecutionResult")-> float:
+        "it measures the inverse of the difference of the two executions, normalized by total lines"
+        differences = set(self.missing_lines)^(set(other.missing_lines))
+        total_len = len(self.total_lines)
+        val = total_len-len(differences)
+        return val/total_len if total_len>0 else 0.0
+    
+    def similar_executed(self, other: "ExecutionResult")-> float:
+        "it measures the similarity of the two executions, normalized by total lines"
+        both_executed = set(self.total_lines)-set(self.missing_lines)-set(other.missing_lines)
+        val = len(both_executed)
+        total_len = len(self.total_lines)
+        return val/total_len if total_len>0 else 0.0
+    
     def __repr__(self) -> str:
         return f"<ExecutionResult covered={self.fraction_covered():.2%} total={len(self.total_lines)} missing={len(self.missing_lines)}>"
 
@@ -58,7 +72,7 @@ class CoverageTester:
             try:
                 self.export_fn(*args)
             except Exception:
-                # swallow exceptions from the tested function, but ensure coverage is stopped
+                # swallow exceptions from the tested function
                 pass
         finally:
             cov.stop()
@@ -67,10 +81,20 @@ class CoverageTester:
 
 def test_coverage(function: FunctionType):
     tester = CoverageTester(function)
-    for sample in ("XV", "test", "MCMXCIV", "IL", "XXL", "IXI"):
+    vals=[]
+    for sample in ("XV", "test", "MCMXCIV", "MCMXCIVV", "IL", "XXL", "IXI", ):
         result = tester.run_test((sample,))
+        vals.append(result)
         print(f"Coverage for function {function['name']} with input {sample!r}: {result.fraction_covered()*100:.2f}%")
 
+    # compute pairwise coverage similarity
+    for x in vals:
+        to_print=""
+        for y in vals:
+            sim = x.similar_executed(y)
+            to_print+=f"{sim:.2f} "
+        print(to_print)
+    
 
 if __name__ == "__main__":
     main()
