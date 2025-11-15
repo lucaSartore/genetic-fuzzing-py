@@ -1,5 +1,10 @@
 from abc import ABC, abstractmethod
-from typing import Self
+from annotationlib import get_annotate_from_class_namespace
+from os import stat
+from types import GenericAlias
+from typing import Self, TypeAlias, TypeAliasType, Union, Any
+
+AdaptedType = type | GenericAlias
 
 class TypeAdapter[T](ABC):
     '''
@@ -11,8 +16,9 @@ class TypeAdapter[T](ABC):
     '''
     pass
 
+    @classmethod
     @abstractmethod
-    def __init__(self, initial_value: T | None = None) -> None:
+    def initialize(cls, adapted_type: AdaptedType, initial_value: T | None = None) -> Self:
         '''
         create an instance of the current class.
         caller can optionally provide an initial value.
@@ -36,7 +42,7 @@ class TypeAdapter[T](ABC):
         pass
 
     @abstractmethod
-    def mutations(self) -> None:
+    def mutate(self) -> None:
         '''
         mutate the current instance of the class
         '''
@@ -49,21 +55,29 @@ class TypeAdapter[T](ABC):
         '''
         pass
 
-
     @classmethod
-    def adapter_importance(cls) -> int:
+    @abstractmethod
+    def get_type(cls) -> type[T]:
         '''
-        define the importance of the current adapter.
-        When multiple adapters are available for the same type, the adapter
-        that has the higher importance will be used
+        return the type that the current adapter is generating
         '''
-        return 1
+        pass
+    
+    @staticmethod
+    def get_raw_time(adapted_type: AdaptedType) -> type:
+        if type(adapted_type) == GenericAlias:
+            inner_type = adapted_type.__origin__
+            assert type(inner_type) == type, \
+            'annotations must have concrete types in order to generate type adapter automatically'
+            return inner_type
+        assert isinstance(adapted_type, type)
+        return adapted_type
 
-    @classmethod
-    def parameter_matching(cls) -> str:
-        '''
-        return a regex that indicate whether the current adapter
-        can be used for a specific function argument.
-        this is to have specialized type adapters for specific arguments to a function
-        '''
-        return ".+"
+    @staticmethod
+    def parse_adapted_type(to_parse: Any) -> AdaptedType:
+        if isinstance(to_parse, type):
+            return to_parse
+        if type(to_parse) == GenericAlias:
+            return to_parse
+        raise Exception(f'unable to parse type {to_parse}')
+

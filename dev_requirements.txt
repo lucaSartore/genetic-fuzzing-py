@@ -1,3 +1,4 @@
 debugpy==1.8.17
 google-genai==1.49.0
 python-dotenv==1.2.1
+pytest==9.0.1
