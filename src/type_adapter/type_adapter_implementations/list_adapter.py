@@ -1,7 +1,8 @@
 from types import GenericAlias
-from typing import Self, TYPE_CHECKING
+from typing import Self
 from type_adapter.type_adapter import AdaptedType, TypeAdapter
 from type_adapter.type_adapter_collection import TypeAdapterCollection
+import random
 
 class ListAdapter(TypeAdapter[list]):
     '''
@@ -23,19 +24,21 @@ class ListAdapter(TypeAdapter[list]):
         """
 
         value: list[TypeAdapter] = []
+        adapter = TypeAdapterCollection.get_adapter_static(
+            cls.get_raw_time(inner_type)
+        )
+
         if initial_value != None:
-            adapter = TypeAdapterCollection.get_adapter_static(
-                cls.get_raw_time(inner_type)
-            )
             value = [
                 adapter.initialize(inner_type, x)
                 for x in initial_value
             ]
-        return cls(inner_type, value)
+        return cls(inner_type, value, adapter)
     
-    def __init__(self, inner_type: AdaptedType, value: list) -> None:
+    def __init__(self, inner_type: AdaptedType, value: list, adapter: type[TypeAdapter]) -> None:
         self.inner_type = inner_type
         self.value = value
+        self.adapter = adapter
 
     def get_value(self) -> list:
         return [
@@ -49,16 +52,23 @@ class ListAdapter(TypeAdapter[list]):
         return a.deep_copy()
 
     def mutate(self) -> None:
-        # todo:  implement strategies to mutate list length
-        for x in self.value:
-            x.mutate()
-        return
+        #todo: make strategy more serious
+        choice = random.randint(1,100)
+
+        if choice <= 50:
+            for x in self.value:
+                x.mutate()
+        elif choice <= 85:
+            self.value.append(self.adapter.initialize(self.inner_type))
+        elif len(self.value) > 0:
+            self.value.pop()
 
 
     def deep_copy(self) -> Self:
         return self.__class__(
             self.inner_type,
-            [x.deep_copy() for x in self.value]
+            [x.deep_copy() for x in self.value],
+            self.adapter
         )
 
     @classmethod
