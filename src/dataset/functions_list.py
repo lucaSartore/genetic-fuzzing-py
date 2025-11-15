@@ -414,4 +414,127 @@ FUNCTIONS: list[FunctionType] = [
         "name": "itertools_grouped_permutations",
         "description": "Generates 'r'-length permutations of 'items' and groups them by their first element using 'itertools'.",
     },
+
+
+    #### more complex functions ####
+    {
+        "name": "merge_nested_dicts",
+        "description": "Recursively merges multiple dictionaries with nested structures, handling conflicts via a strategy enum (overwrite/merge/keep).",
+    },
+    {
+        "name": "flatten_heterogeneous_list",
+        "description": "Flattens nested lists of mixed types (lists, tuples, sets) up to a specified depth with type preservation options.",
+    },
+    {
+        "name": "transpose_jagged_matrix",
+        "description": "Transposes a list of lists with varying lengths, with padding strategies (None/repeat/truncate).",
+    },
+    {
+        "name": "group_by_composite_key",
+        "description": "Groups list of dicts by multiple keys, with aggregation functions (sum/mean/concat) for value lists.",
+    },
+    {
+        "name": "deduplicate_nested_structures",
+        "description": "Removes duplicates from nested collections using custom equality functions and preservation strategies.",
+    },
+    {
+        "name": "parse_structured_log",
+        "description": "Parses multi-format log entries (JSON/key-value/delimited) with field extraction rules and error handling modes.",
+    },
+    {
+        "name": "tokenize_with_context",
+        "description": "Tokenizes text with context-aware rules (nested delimiters, escape sequences, quote handling).",
+    },
+    {
+        "name": "fuzzy_multi_pattern_match",
+        "description": "Matches multiple patterns with edit distance thresholds and priority rules for overlapping matches.",
+    },
+    {
+        "name": "interpolate_template",
+        "description": "Renders templates with nested variable substitution, filters, and conditional blocks.",
+    },
+    {
+        "name": "normalize_unicode_variants",
+        "description": "Normalizes text handling multiple unicode forms, homoglyphs, and bidirectional text.",
+    },
+    {
+        "name": "validate_json_schema",
+        "description": "Validates nested JSON against schema with custom validators, type coercion options, and error collection modes.",
+    },
+    {
+        "name": "parse_cron_expression",
+        "description": "Parses cron expressions with extended syntax (ranges, lists, steps) returning next N execution times.",
+    },
+    {
+        "name": "validate_nested_config",
+        "description": "Validates hierarchical config dicts with type checking, required fields, mutual exclusions, and dependency rules.",
+    },
+    {
+        "name": "parse_query_dsl",
+        "description": "Parses domain-specific query language with operators (AND/OR/NOT), nested conditions, and field validators.",
+    },
+    {
+        "name": "sanitize_nested_input",
+        "description": "Recursively sanitizes user input with per-field rules (strip/escape/validate) and allowlist/blocklist patterns.",
+    },
+    {
+        "name": "find_paths_in_dag",
+        "description": "Finds all paths between nodes in directed acyclic graph (adjacency list) with constraint predicates.",
+    },
+    {
+        "name": "balance_tree_structure",
+        "description": "Rebalances tree (nested dicts) according to strategies (AVL/red-black/weight) with rotation tracking.",
+    },
+    {
+        "name": "detect_cycles_with_metadata",
+        "description": "Detects cycles in graph with edge types, returning cycle paths with metadata aggregation.",
+    },
+    {
+        "name": "compute_tree_diff",
+        "description": "Computes structural diff between trees with operation types (add/remove/modify) and similarity metrics.",
+    },
+    {
+        "name": "merge_hierarchical_permissions",
+        "description": "Merges permission trees with inheritance rules, overrides, and conflict resolution strategies.",
+    },
+    {
+        "name": "aggregate_time_series",
+        "description": "Aggregates time-series data (list of tuples) with multiple window types (sliding/tumbling/session) and functions.",
+    },
+    {
+        "name": "interpolate_sparse_matrix",
+        "description": "Interpolates missing values in sparse matrix (dict of coordinates) using multiple strategies.",
+    },
+    {
+        "name": "compute_rolling_statistics",
+        "description": "Computes rolling statistics over windows with multiple metrics and outlier handling modes.",
+    },
+    {
+        "name": "bin_multidimensional_data",
+        "description": "Bins data points into multi-dimensional buckets with adaptive/fixed strategies and edge handling.",
+    },
+    {
+        "name": "normalize_heterogeneous_metrics",
+        "description": "Normalizes lists of metrics with different scales using per-metric strategies (z-score/min-max/robust).",
+    },
+    {
+        "name": "execute_state_machine",
+        "description": "Executes state machine with transitions (dict of state->list of conditions), event queue, and guard functions.",
+    },
+    {
+        "name": "resolve_dependency_graph",
+        "description": "Resolves execution order from dependency DAG with parallel groups and circular dependency detection.",
+    },
+    {
+        "name": "apply_transformation_pipeline",
+        "description": "Applies transformation pipeline (list of functions) with conditional routing, error recovery modes, and state passing.",
+    },
+    {
+        "name": "schedule_task_dag",
+        "description": "Schedules tasks with dependencies, resource constraints, priorities, and multiple scheduling strategies.",
+    },
+    {
+        "name": "validate_workflow_transitions",
+        "description": "Validates workflow state transitions with role-based permissions, preconditions, and side-effect validators.",
+    },
 ]

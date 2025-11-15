@@ -1,16 +1,10 @@
-# necessary inputs (use only the python standard libraries)
-# No specific imports are needed from standard libraries for this function.
-
-# you can define other auxiliary functions
+# necessary imports (use only the python standard libraries)
 
 def int_to_roman(num: int) -> str:
     """
     Converts an integer (1-3999) to its Roman numeral representation.
-
-    This function handles the conversion of integers to Roman numerals,
-    including the special subtractive cases (e.g., IV for 4, IX for 9).
-    The conversion is done by iterating through a predefined list of Roman
-    numeral values and their corresponding symbols, from largest to smallest.
+    This implementation uses complex branching logic to handle the different patterns
+    for thousands, hundreds, tens, and units places, including subtractive rules (e.g., IV, IX, XL, XC, CD, CM).
 
     Args:
         num: An integer between 1 and 3999 (inclusive).
@@ -19,49 +13,71 @@ def int_to_roman(num: int) -> str:
         A string representing the Roman numeral of the input integer.
 
     Raises:
-        ValueError: If the input integer `num` is not within the valid
-                    range of 1 to 3999.
+        ValueError: If the input integer is not within the valid range [1, 3999].
     """
-    if not (1 <= num <= 3999):
+    if not 1 <= num <= 3999:
         raise ValueError("Input integer must be between 1 and 3999.")
 
-    # Define the Roman numeral values and their symbols.
-    # It's crucial to list them in descending order of value,
-    # and include the subtractive combinations (like 900 for CM)
-    # before their larger components (like 500 for D or 100 for C)
-    # to ensure correct processing.
-    roman_map = [
-        (1000, 'M'),
-        (900, 'CM'),
-        (500, 'D'),
-        (400, 'CD'),
-        (100, 'C'),
-        (90, 'XC'),
-        (50, 'L'),
-        (40, 'XL'),
-        (10, 'X'),
-        (9, 'IX'),
-        (5, 'V'),
-        (4, 'IV'),
-        (1, 'I')
-    ]
+    roman_parts = []
 
-    roman_numeral_parts = []
-    current_num = num
+    # Process the thousands place
+    # Thousands are represented by 'M's. Max is 3 (MMM = 3000).
+    thousands = num // 1000
+    if thousands > 0:
+        roman_parts.append("M" * thousands)
+    num %= 1000  # Update num to the remainder for the next place value
 
-    # Iterate through the Roman map.
-    for value, symbol in roman_map:
-        # While the current number is greater than or equal to the current Roman value,
-        # append the symbol and subtract the value from the number.
-        while current_num >= value:
-            roman_numeral_parts.append(symbol)
-            current_num -= value
-        # Optimization: If the number becomes 0, we have completed the conversion.
-        if current_num == 0:
-            break
+    # Process the hundreds place
+    # Roman numerals for hundreds follow patterns:
+    # 900: CM
+    # 400: CD
+    # 500-800: D + C's (e.g., 600=DC, 700=DCC, 800=DCCC)
+    # 100-300: C's (e.g., 100=C, 200=CC, 300=CCC)
+    hundreds = num // 100
+    if hundreds == 9:
+        roman_parts.append("CM")
+    elif hundreds == 4:
+        roman_parts.append("CD")
+    elif hundreds >= 5: # 5, 6, 7, 8
+        roman_parts.append("D" + "C" * (hundreds - 5))
+    elif hundreds > 0: # 1, 2, 3
+        roman_parts.append("C" * hundreds)
+    num %= 100 # Update num for tens place
 
-    # Join all collected symbols to form the final Roman numeral string.
-    return "".join(roman_numeral_parts)
+    # Process the tens place
+    # Roman numerals for tens follow similar patterns:
+    # 90: XC
+    # 40: XL
+    # 50-80: L + X's (e.g., 60=LX, 70=LXX, 80=LXXX)
+    # 10-30: X's (e.g., 10=X, 20=XX, 30=XXX)
+    tens = num // 10
+    if tens == 9:
+        roman_parts.append("XC")
+    elif tens == 4:
+        roman_parts.append("XL")
+    elif tens >= 5: # 5, 6, 7, 8
+        roman_parts.append("L" + "X" * (tens - 5))
+    elif tens > 0: # 1, 2, 3
+        roman_parts.append("X" * tens)
+    num %= 10 # Update num for units place
+
+    # Process the units place
+    # Roman numerals for units follow similar patterns:
+    # 9: IX
+    # 4: IV
+    # 5-8: V + I's (e.g., 6=VI, 7=VII, 8=VIII)
+    # 1-3: I's (e.g., 1=I, 2=II, 3=III)
+    units = num
+    if units == 9:
+        roman_parts.append("IX")
+    elif units == 4:
+        roman_parts.append("IV")
+    elif units >= 5: # 5, 6, 7, 8
+        roman_parts.append("V" + "I" * (units - 5))
+    elif units > 0: # 1, 2, 3
+        roman_parts.append("I" * units)
+
+    return "".join(roman_parts)
 
 # add this ad the end of the file
 EXPORT_FUNCTION = int_to_roman

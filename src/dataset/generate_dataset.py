@@ -16,11 +16,13 @@ client = genai.Client(api_key=key)
 
 def main():
     for i, function in enumerate(FUNCTIONS):
+
+        if i <= 5:
+            continue
+
         print(f"{i+1}/{len(FUNCTIONS)} - generating {function['name']}")
         generate_function(function)
 
-        if i > 4:
-            break
 
 def generate_function(func: FunctionType):
     prompt = f"""

@@ -1,89 +1,87 @@
-# necessary inputs (use only the python standard libraries)
+# necessary imports (use only the python standard libraries)
+# No specific imports are required from the Python standard library for this solution.
 
-# you can define other auxiliary functions
-
-def _expand(s: str, left: int, right: int) -> tuple[int, int]:
+def _expand_around_center(s: str, left: int, right: int) -> tuple[int, int]:
     """
-    Helper function to expand around a center (or two centers for even length)
-    and find the boundaries of the palindrome.
-
-    It expands outwards from the given `left` and `right` indices as long as
-    characters match and remain within the string bounds.
+    Helper function to expand around a given center (or pair of centers)
+    to find the longest palindrome.
 
     Args:
-        s: The input string.
-        left: The initial left index for expansion.
-        right: The initial right index for expansion.
+        s (str): The input string.
+        left (int): The left boundary of the potential center.
+        right (int): The right boundary of the potential center.
 
     Returns:
-        A tuple (actual_left, actual_right) representing the inclusive
-        start and end indices of the longest palindrome found centered
-        around the initial `left` and `right`.
+        tuple[int, int]: A tuple containing the start and end indices
+                         (inclusive) of the longest palindrome found
+                         centered at `left` and `right`.
     """
-    n = len(s)
-    # Expand outwards from the center(s) as long as characters match
-    # and stay within string bounds.
-    while left >= 0 and right < n and s[left] == s[right]:
+    # While the boundaries are valid and characters match, expand outwards
+    while left >= 0 and right < len(s) and s[left] == s[right]:
         left -= 1
         right += 1
-    # The loop exits when s[left] != s[right] or when an index goes out of bounds.
-    # At this point, `left` is one position too far left and `right` is one
-    # position too far right. So, the actual palindrome boundaries are
-    # (left + 1) and (right - 1).
+    # After the loop, `left` and `right` are one step beyond the actual
+    # palindrome boundaries. The palindrome is s[left + 1 ... right - 1].
     return left + 1, right - 1
-
 
 def longest_palindromic_substring(s: str) -> str:
     """
-    Finds the longest substring that is a palindrome using the "expand around center" strategy.
-
-    This implementation iterates through each character of the string,
-    considering it as a potential center for an odd-length palindrome.
-    It also considers each pair of adjacent characters as a potential center
-    for an even-length palindrome. For each potential center, it expands
-    outwards to find the longest palindrome centered there. The overall
-    longest palindrome found throughout this process is then returned.
+    Finds the longest substring that is a palindrome using the
+    expand-around-center approach.
 
     Args:
-        s: The input string.
+        s (str): The input string.
 
     Returns:
-        The longest palindromic substring found in 's'. If there are multiple
-        substrings of the same maximum length, this implementation returns
-        the first one encountered (from left to right in the original string).
+        str: The longest palindromic substring found in s.
+             If multiple longest palindromes exist, any one of them is returned.
+             Returns an empty string if the input string is empty.
     """
-    if not s:
-        return ""
-
     n = len(s)
+
+    # Base cases:
+    # An empty string has an empty string as its longest palindrome.
+    if n == 0:
+        return ""
+    # A single character string is itself a palindrome.
     if n < 2:
-        # A string with 0 or 1 character is a palindrome itself.
         return s
 
-    longest_start = 0  # Stores the starting index of the longest palindrome found
-    longest_len = 1    # Stores the length of the longest palindrome found (initial: 1 for any single char)
+    # Initialize variables to keep track of the longest palindrome found so far.
+    # `start` is the starting index (inclusive)
+    # `end` is the ending index (inclusive)
+    start = 0
+    end = 0
 
+    # Iterate through each character to consider it as a potential center
     for i in range(n):
-        # Case 1: Odd length palindromes, centered at 'i'
-        # e.g., "aba", where 'b' at index 1 is the center.
-        start1, end1 = _expand(s, i, i)
-        current_len1 = end1 - start1 + 1
-        if current_len1 > longest_len:
-            longest_len = current_len1
-            longest_start = start1
+        # Case 1: Palindromes with odd length (e.g., "aba", centered at 'b')
+        # Here, the center is a single character at index `i`.
+        left1, right1 = _expand_around_center(s, i, i)
+        
+        # Case 2: Palindromes with even length (e.g., "abba", centered between 'b' and 'b')
+        # Here, the center is between characters at index `i` and `i+1`.
+        left2, right2 = _expand_around_center(s, i, i + 1)
 
-        # Case 2: Even length palindromes, centered between 'i' and 'i+1'
-        # e.g., "abba", where the center is between 'b' at index 1 and 'b' at index 2.
-        # Only proceed if i+1 is a valid index to form a pair.
-        if i + 1 < n:
-            start2, end2 = _expand(s, i, i + 1)
-            current_len2 = end2 - start2 + 1
-            if current_len2 > longest_len:
-                longest_len = current_len2
-                longest_start = start2
+        # Determine which of the two (odd or even) resulted in a longer palindrome
+        # centered at or around `i`.
+        len1 = right1 - left1 + 1
+        len2 = right2 - left2 + 1
 
-    # Extract and return the longest palindromic substring using its start index and length.
-    return s[longest_start : longest_start + longest_len]
+        current_max_len = end - start + 1
 
-# add this ad the end of the file
+        if len1 > current_max_len:
+            start = left1
+            end = right1
+            current_max_len = len1 # Update for the next comparison
+        
+        if len2 > current_max_len:
+            start = left2
+            end = right2
+            # current_max_len = len2 # Not strictly needed as loop finishes
+
+    # Return the substring from the `start` index to the `end` index (inclusive).
+    return s[start : end + 1]
+
+# add this at the end of the file
 EXPORT_FUNCTION = longest_palindromic_substring
