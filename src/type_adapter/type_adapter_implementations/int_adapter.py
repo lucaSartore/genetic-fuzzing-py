@@ -9,7 +9,7 @@ class IntAdapter(TypeAdapter[int]):
     @classmethod
     def initialize(cls, adapted_type: AdaptedType, initial_value: int | None = None) -> Self:
         assert adapted_type == int
-        value = initial_value if initial_value is not None else 0
+        value = initial_value if initial_value is not None else random.randint(0,1000)
         return cls(value)
 
     def __init__(self, value: int) -> None:
