@@ -34,14 +34,23 @@ class ExecutionResult:
         total_len = len(self.total_lines)
         return val/total_len if total_len>0 else 0.0
     
+    def merge_one(self, other: "ExecutionResult")-> "ExecutionResult":
+        if self.total_lines != other.total_lines:
+            raise ValueError("cannot merge ExecutionResults with different total lines")
+        self.missing_lines= list(set(self.missing_lines).intersection(set(other.missing_lines)))
+        return self
+        
+    def merge_all(self, others: list["ExecutionResult"])-> "ExecutionResult":
+        #result = ExecutionResult(self.total_lines, self.missing_lines)
+        for other in others:
+            self.merge_one(other)
+        return self
+    
     def __repr__(self) -> str:
         return f"<ExecutionResult covered={self.fraction_covered():.2%} total={len(self.total_lines)} missing={len(self.missing_lines)}>"
 
 
 class CoverageTester:
-    function: FunctionType
-    module: ModuleType
-    export_fn: callable
     
     def __init__(self, function: FunctionType):
         self.function = function
