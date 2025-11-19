@@ -1,11 +1,12 @@
-from typing import Callable, Self
+from typing import Self
+from dataset.functions_list import FunctionType
 from abc import ABC, abstractmethod
 
 
-class Strategy:
+class Strategy[TSettings](ABC):
     @classmethod
     @abstractmethod
-    def initialize(cls, function: Callable) -> Self:
+    def initialize(cls, function: FunctionType, settings: TSettings | None = None) -> Self:
         pass
 
     @abstractmethod
