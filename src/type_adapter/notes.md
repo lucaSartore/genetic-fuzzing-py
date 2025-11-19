@@ -4,7 +4,6 @@
  - [ ] bool
  - [ ] str
  - [ ] list
- - [ ] list
  - [ ] literal
  - [ ] union
  - [ ] dict
