@@ -1,5 +1,6 @@
 
 from types import ModuleType
+from typing import Callable
 from dataset.functions_list import FUNCTIONS, FunctionType
 from importlib.util import spec_from_file_location, module_from_spec
 from pathlib import Path
@@ -70,7 +71,8 @@ class CoverageTester:
 
         if not hasattr(self.module, "EXPORT_FUNCTION"):
             raise AttributeError(f"module {function['name']} has no EXPORT_FUNCTION")
-        self.export_fn = getattr(self.module, "EXPORT_FUNCTION")
+        self.export_fn: Callable = getattr(self.module, "EXPORT_FUNCTION")
+        assert callable(self.export_fn)
     
     
     def run_test(self, args: tuple):
