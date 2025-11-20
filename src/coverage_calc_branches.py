@@ -9,35 +9,32 @@ def main():
     test_coverage(FUNCTIONS[0])
 
 class ExecutionResult:
-    #total_lines: list[int]
-    #missing_lines: list[int]
 
-    def __init__(self, total_lines: list[int], missing_lines: list[int]):
-        self.total_lines = total_lines
-        self.missing_lines = missing_lines
-    
+    def __init__(self, taken_branches: list[tuple[int, int]], total_branches: list[tuple[int, int]]):
+        self.taken_branches = taken_branches
+        self.total_branches = total_branches
+        self.total_branches_count = sum([count for (_, count) in total_branches])
+        
     def fraction_covered(self) -> float:
-        covered_lines = len(self.total_lines) - len(self.missing_lines)
-        return covered_lines / len(self.total_lines) if len(self.total_lines) > 0 else 0.0
+        covered_lines = len(self.taken_branches)
+        return covered_lines / self.total_branches_count if self.total_branches_count > 0 else 0.0
     
     def similar_executed_or_ignored(self, other: "ExecutionResult")-> float:
         "it measures the inverse of the difference of the two executions, normalized by total lines"
-        differences = set(self.missing_lines)^(set(other.missing_lines))
-        total_len = len(self.total_lines)
-        val = total_len-len(differences)
-        return val/total_len if total_len>0 else 0.0
+        differences = set(self.taken_branches)^(set(other.taken_branches))
+        val = self.total_branches_count-len(differences)
+        return val/self.total_branches_count if self.total_branches_count>0 else 0.0
     
     def similar_executed(self, other: "ExecutionResult")-> float:
         "it measures the similarity of the two executions, normalized by total lines"
-        both_executed = set(self.total_lines)-set(self.missing_lines)-set(other.missing_lines)
+        both_executed = set(self.taken_branches).intersection(set(other.taken_branches))
         val = len(both_executed)
-        total_len = len(self.total_lines)
-        return val/total_len if total_len>0 else 0.0
+        return val/self.total_branches_count if self.total_branches_count>0 else 0.0
     
     def merge_one(self, other: "ExecutionResult")-> "ExecutionResult":
-        if self.total_lines != other.total_lines:
+        if self.total_branches != other.total_branches:
             raise ValueError("cannot merge ExecutionResults with different total lines")
-        self.missing_lines= list(set(self.missing_lines).intersection(set(other.missing_lines)))
+        self.taken_branches= list(set(self.taken_branches).union(set(other.taken_branches)))
         return self
         
     def merge_all(self, others: list["ExecutionResult"])-> "ExecutionResult":
@@ -74,7 +71,7 @@ class CoverageTester:
     
     
     def run_test(self, args: tuple):
-        cov = coverage.Coverage(data_file=None)
+        cov = coverage.Coverage(data_file=None, branch=True)
         try:
             cov.erase()
             cov.start()
@@ -85,8 +82,24 @@ class CoverageTester:
                 pass
         finally:
             cov.stop()
-        (_, total_lines, _, missing_lines, _) = cov.analysis2(self.module.__file__)
-        return ExecutionResult(total_lines, missing_lines)
+        branch = cov.branch_stats(self.module.__file__)
+        total_branches = []
+        for key, value in branch.items():
+            total_branches.append((key, value[0]))
+        
+        
+        # extended for readability
+        arcs = cov.get_data().arcs(self.module.__file__)
+        branches_taken = []
+        for fr, to in arcs:
+            if fr is None or to is None:
+                continue
+            if fr==to:
+                continue
+            if fr<0 or to<0:
+                continue
+            branches_taken.append((fr, to))
+        return ExecutionResult(branches_taken, total_branches)
 
 def test_coverage(function: FunctionType):
     tester = CoverageTester(function)
@@ -94,13 +107,14 @@ def test_coverage(function: FunctionType):
     for sample in ("XV", "test", "MCMXCIV", "MCMXCIVV", "IL", "XXL", "IXI", ):
         result = tester.run_test((sample,))
         vals.append(result)
+        #print(f"{result.total_lines}")
         print(f"Coverage for function {function['name']} with input {sample!r}: {result.fraction_covered()*100:.2f}%")
 
     # compute pairwise coverage similarity
     for x in vals:
         to_print=""
         for y in vals:
-            sim = x.similar_executed(y)
+            sim = x.similar_executed_or_ignored(y)
             to_print+=f"{sim:.2f} "
         print(to_print)
     
