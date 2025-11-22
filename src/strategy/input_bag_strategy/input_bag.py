@@ -1,7 +1,6 @@
 from __future__ import annotations
 from typing import Self
-from coverage_calc_lines import CoverageTester, ExecutionResult
-from dataset.output.count_and_say import count_and_say
+from coverage_calc_lines import CoverageTester
 from inspyred_individual import InspyredIndividual
 from strategy.strategy import Strategy
 from dataclasses import dataclass
