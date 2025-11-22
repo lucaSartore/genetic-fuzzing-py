@@ -12,7 +12,7 @@ from strategy.input_bag_strategy.input_bag import Individual
 
 @dataclass
 class RandomStrategySettings():
-    num_inputs: int = 5000
+    num_inputs: int = 50000
 
 class RandomStrategy(Strategy[RandomStrategySettings]):
     @classmethod

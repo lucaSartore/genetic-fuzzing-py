@@ -2,7 +2,9 @@ from type_adapter.type_adapter import AdaptedType, TypeAdapter
 from typing import Self
 
 # ALLOWED_CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz _-1234567890"
+# ALLOWED_CHARACTERS = "1."
 ALLOWED_CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+# ALLOWED_CHARACTERS = "ABCDEFGHI[]123456789]"
 # ALLOWED_CHARACTERS = "IVXCML"
 
 class StrAdapter(TypeAdapter[str]):

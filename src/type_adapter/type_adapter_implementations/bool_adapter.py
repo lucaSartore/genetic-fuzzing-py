@@ -6,7 +6,7 @@ class BoolAdapter(TypeAdapter[bool]):
     @classmethod
     def initialize(cls, random, adapted_type: AdaptedType, initial_value: bool | None = None) -> Self:
         assert adapted_type == bool
-        value = initial_value or random.choice[True, False]
+        value = initial_value or random.choice([True, False])
         return cls(value)
 
     def __init__(self, value: bool) -> None:

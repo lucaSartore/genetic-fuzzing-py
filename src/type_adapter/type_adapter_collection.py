@@ -18,12 +18,14 @@ class TypeAdapterCollection:
         from type_adapter.type_adapter_implementations.bool_adapter import BoolAdapter
         from type_adapter.type_adapter_implementations.int_adapter import IntAdapter
         from type_adapter.type_adapter_implementations.list_adapter import ListAdapter
+        from type_adapter.type_adapter_implementations.str_adapter import StrAdapter
 
         if use_default_adapters_list:
             self.adapters = [
                 ListAdapter,
                 IntAdapter,
-                BoolAdapter
+                BoolAdapter,
+                StrAdapter
             ]
         else:
             self.adapters = []

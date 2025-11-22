@@ -1,43 +1,51 @@
 from __future__ import annotations
 from typing import Self
+
+from inspyred.ec.variators import mutator
 from coverage_calc_lines import CoverageTester
 from inspyred_individual import InspyredIndividual
 from strategy.strategy import Strategy
 from dataclasses import dataclass
 from dataset.functions_list import FunctionType
 from type_adapter.args_dispatcher import ArgsDispatcher
-import random
+from random import Random
 from inspyred import ec
+from util.mutable_probability import MutableProbability
 
 
 @dataclass
 class InputBagSettings():
-    num_inputs: int = 25
+    num_inputs: int = 100
     num_individuals: int = 50
     num_generations: int = 500
+    num_selected: int = 10
 
 class Individual:
-    def __init__(self, args_dispatchers: list[ArgsDispatcher]) -> None:
+    def __init__(self, args_dispatchers: list[ArgsDispatcher], mutation_probability = MutableProbability(0.1, 0.01)) -> None:
         self.args_dispatchers = args_dispatchers
+        self.mutation_probability = mutation_probability
 
     def evaluate(self, tester: CoverageTester):
         args = [d.get_args() for d in self.args_dispatchers]
         result = tester.run_test(args)
         return result.fraction_covered()
 
-    def mutate(self, random):
+    def mutate(self, random: Random):
+        self.mutation_probability.mutate(random)
         for dispatcher in self.args_dispatchers:
-            dispatcher.mutate(random)
+            if self.mutation_probability.event(random):
+                dispatcher.mutate(random)
 
     def get_args(self) -> list[tuple]:
         return [x.get_args() for x in self.args_dispatchers]
 
     @staticmethod
     def corssover(random, a: Individual, b: Individual):
+        mp = MutableProbability.crossover(random, a.mutation_probability, b.mutation_probability)
         return Individual([
             ArgsDispatcher.crossover(random, da, db)
             for (da,db) in zip(a.args_dispatchers, b.args_dispatchers)
-        ])
+        ], mp)
 
 class InputBag(Strategy[InputBagSettings]):
     @classmethod
@@ -52,10 +60,11 @@ class InputBag(Strategy[InputBagSettings]):
         self.settings = settings
 
     def run(self) -> list[tuple]:
-        rand = random.Random()
+        rand = Random()
         rand.seed(2347)
+        new_individual_probability = MutableProbability(0.1, 0.01)
 
-        def generate_individual(random, args):
+        def generate_individual(random: Random, args):
             return Individual([
                 ArgsDispatcher.initialize(random, self.function)
                 for _ in range(self.settings.num_inputs)
@@ -63,16 +72,20 @@ class InputBag(Strategy[InputBagSettings]):
 
         def evaluate_individual(candidates: list[Individual], args):
             return [ c.evaluate(self.tester) for c in candidates]
+
             # return [ 1 for c in candidates]
 
-        def mutate_operator(random, candidates: list[Individual], args):
-            print("mutate operator")
-            for candidate in candidates:
-                candidate.mutate(random)
+        def mutate_operator(random: Random, candidates: list[Individual], args):
+            for i,candidate in enumerate(candidates):
+                if new_individual_probability.event(random):
+                    candidates[i] = generate_individual(random, args)
+                else:
+                    candidate.mutate(random)
             return candidates
 
         # def crossover_operator(random, parents: list[Tuple[Individual, Individual]], args):
-        def crossover_operator(random, candidates: list[Individual], args):
+        def crossover_operator(random: Random, candidates: list[Individual], args):
+            print(len(candidates))
             to_return = []
             for _ in range(len(candidates)):
                 a = random.choice(candidates)
@@ -88,11 +101,11 @@ class InputBag(Strategy[InputBagSettings]):
         ea = ec.EvolutionaryComputation(rand)
         
         # 3. Attach the custom functions (the adapters)
-        ea.selector = ec.selectors.tournament_selection
+        ea.selector = ec.selectors.rank_selection
         # ea.variator = [crossover_operator, mutate_operator]
         ea.variator = [crossover_operator, mutate_operator] #type: ignore
         # ea.variator = [ec.variators.uniform_crossover, mutate_operator]
-        ea.replacer = ec.replacers.generational_replacement
+        ea.replacer = ec.replacers.steady_state_replacement
         def terminator(population, num_generations, num_evaluations, args):
             return num_generations == self.settings.num_generations
         ea.terminator = terminator
@@ -108,7 +121,7 @@ class InputBag(Strategy[InputBagSettings]):
             
             # Algorithm parameters
             pop_size=self.settings.num_individuals,
-            num_selected=5, # Number of individuals selected for breeding
+            num_selected=self.settings.num_selected, # Number of individuals selected for breeding
         )
         
         best = max(final_pop, key = lambda x: x.fitness)

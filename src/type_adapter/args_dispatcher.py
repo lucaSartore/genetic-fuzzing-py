@@ -1,6 +1,8 @@
+from random import Random
 from typing import Any, Callable, ParamSpec, TypeVar, Self
 from type_adapter.type_adapter import TypeAdapter
 from type_adapter.type_adapter_collection import TypeAdapterCollection
+from util.mutable_probability import MutableProbability
 
 
 TReturn = TypeVar('TReturn')
@@ -32,8 +34,9 @@ class ArgsDispatcher[**TParam, TReturn]:
             )
         return cls(args)
 
-    def __init__(self, args: list[TypeAdapter]) -> None:
+    def __init__(self, args: list[TypeAdapter], mutation_probability = MutableProbability(0.2, 0.02)) -> None:
         self.args = args
+        self.mutation_probability = mutation_probability
 
     def get_args(self) -> tuple:
         """
@@ -42,15 +45,18 @@ class ArgsDispatcher[**TParam, TReturn]:
         """
         return tuple(x.get_value() for x in self.args)
 
-    def mutate(self, random) -> None:
+    def mutate(self, random: Random) -> None:
+        self.mutation_probability.mutate(random)
         for arg in self.args:
-            arg.mutate(random)
+            if self.mutation_probability.event(random):
+                arg.mutate(random)
 
     @classmethod
-    def crossover(cls, random, a: Self, b: Self) -> Self:
+    def crossover(cls, random: Random, a: Self, b: Self) -> Self:
+        mp = MutableProbability.crossover(random, a.mutation_probability, b.mutation_probability)
         new_list = list[TypeAdapter]()
         for ia, ib in zip(a.args, b.args):
             adapter = ia.__class__
             new_list.append(adapter.crossover(random ,ia, ib))
-        return cls(new_list)
+        return cls(new_list, mp)
 
