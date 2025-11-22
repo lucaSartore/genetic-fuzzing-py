@@ -1,21 +1,20 @@
 from type_adapter.type_adapter import AdaptedType, TypeAdapter
 from typing import Self
-import random
 
 class FloatAdapter(TypeAdapter[float]):
 
     @classmethod
-    def initialize(cls, adapted_type: AdaptedType, initial_value: float | None = None) -> Self:
+    def initialize(cls, random adapted_type: AdaptedType, initial_value: float | None = None) -> Self:
         pass
 
     def get_value(self) -> float:
         pass
 
     @classmethod
-    def crossover(cls, a: FloatAdapter, b: FloatAdapter) -> FloatAdapter: #type: ignore
+    def crossover(cls, random, a: FloatAdapter, b: FloatAdapter) -> FloatAdapter: #type: ignore
         pass
 
-    def mutate(self) -> None:
+    def mutate(self, random) -> None:
         pass
 
 

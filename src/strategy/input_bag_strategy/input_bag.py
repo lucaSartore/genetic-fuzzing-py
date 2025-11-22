@@ -29,17 +29,17 @@ class Individual:
         merged_result = results[0].merge_all(results[1:])
         return merged_result.fraction_covered()
 
-    def mutate(self):
+    def mutate(self, random):
         for dispatcher in self.args_dispatchers:
-            dispatcher.mutate()
+            dispatcher.mutate(random)
 
     def get_args(self) -> list[tuple]:
         return [x.get_args() for x in self.args_dispatchers]
 
     @staticmethod
-    def corssover(a: Individual, b: Individual):
+    def corssover(random, a: Individual, b: Individual):
         return Individual([
-            ArgsDispatcher.crossover(da, db)
+            ArgsDispatcher.crossover(random, da, db)
             for (da,db) in zip(a.args_dispatchers, b.args_dispatchers)
         ])
 
@@ -56,9 +56,12 @@ class InputBag(Strategy[InputBagSettings]):
         self.settings = settings
 
     def run(self) -> list[tuple]:
+        rand = random.Random()
+        rand.seed(1)
+
         def generate_individual(random, args):
             return Individual([
-                ArgsDispatcher.initialize(self.function)
+                ArgsDispatcher.initialize(random, self.function)
                 for _ in range(self.settings.num_inputs)
             ])
 
@@ -68,7 +71,7 @@ class InputBag(Strategy[InputBagSettings]):
         def mutate_operator(random, candidates: list[Individual], args):
             print("mutate operator")
             for candidate in candidates:
-                candidate.mutate()
+                candidate.mutate(random)
             return candidates
 
         # def crossover_operator(random, parents: list[Tuple[Individual, Individual]], args):
@@ -77,14 +80,12 @@ class InputBag(Strategy[InputBagSettings]):
             for _ in range(len(candidates)):
                 a = random.choice(candidates)
                 b = random.choice(candidates)
-                to_return.append(Individual.corssover(a,b))
+                to_return.append(Individual.corssover(random,a,b))
             return to_return
 
         def observer(population, num_generations, num_evaluations, args):
             print(f'Gen: {num_generations}')
 
-        rand = random.Random()
-        rand.seed(1)
 
         # 2. Instantiate the Evolutionary Computation (EC) engine
         ea = ec.EvolutionaryComputation(rand)
@@ -92,7 +93,7 @@ class InputBag(Strategy[InputBagSettings]):
         # 3. Attach the custom functions (the adapters)
         ea.selector = ec.selectors.tournament_selection
         # ea.variator = [crossover_operator, mutate_operator]
-        ea.variator = [crossover_operator, mutate_operator]
+        ea.variator = [crossover_operator, mutate_operator] #type: ignore
         # ea.variator = [ec.variators.uniform_crossover, mutate_operator]
         ea.replacer = ec.replacers.generational_replacement
         def terminator(population, num_generations, num_evaluations, args):

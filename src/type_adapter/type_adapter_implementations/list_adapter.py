@@ -2,7 +2,6 @@ from types import GenericAlias
 from typing import Self
 from type_adapter.type_adapter import AdaptedType, TypeAdapter
 from type_adapter.type_adapter_collection import TypeAdapterCollection
-import random
 
 class ListAdapter(TypeAdapter[list]):
     '''
@@ -14,7 +13,7 @@ class ListAdapter(TypeAdapter[list]):
     '''
 
     @classmethod
-    def initialize(cls,adapted_type: AdaptedType, initial_value: list | None = None) -> Self:
+    def initialize(cls, random, adapted_type: AdaptedType, initial_value: list | None = None) -> Self:
         assert isinstance(adapted_type, GenericAlias)
         assert adapted_type.__origin__ == list
         assert len(adapted_type.__args__) == 1
@@ -47,11 +46,11 @@ class ListAdapter(TypeAdapter[list]):
         ]
 
     @classmethod
-    def crossover(cls, a: Self, b: Self) -> Self: #type: ignore
+    def crossover(cls, random, a: Self, b: Self) -> Self: #type: ignore
         # todo: implement real crossover strategy
         return a.deep_copy()
 
-    def mutate(self) -> None:
+    def mutate(self, random) -> None:
         #todo: make strategy more serious
         choice = random.randint(1,100)
 

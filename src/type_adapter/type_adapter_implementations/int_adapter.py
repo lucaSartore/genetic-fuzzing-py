@@ -1,13 +1,12 @@
 from type_adapter.type_adapter import AdaptedType, TypeAdapter
 from typing import Self
-import random
 
 MUTATION_DELTA_RANGE = [-2, -1, 0, 1, 2]
 
 class IntAdapter(TypeAdapter[int]):
 
     @classmethod
-    def initialize(cls, adapted_type: AdaptedType, initial_value: int | None = None) -> Self:
+    def initialize(cls, random, adapted_type: AdaptedType, initial_value: int | None = None) -> Self:
         assert adapted_type == int
         value = 0
         # value = initial_value if initial_value is not None else random.randint(0,1000)
@@ -20,7 +19,7 @@ class IntAdapter(TypeAdapter[int]):
         return self.value
 
     @classmethod
-    def crossover(cls, a: IntAdapter, b: IntAdapter) -> IntAdapter: #type: ignore
+    def crossover(cls, random, a: IntAdapter, b: IntAdapter) -> IntAdapter: #type: ignore
         start = min(a.value, b.value)
         end = min(a.value, b.value)
         new = random.randint(start, end)
@@ -30,7 +29,7 @@ class IntAdapter(TypeAdapter[int]):
     def deep_copy(self) -> 'IntAdapter': #type: ignore
         return IntAdapter(self.value)
 
-    def mutate(self) -> None:
+    def mutate(self, random) -> None:
         delta = random.choice(MUTATION_DELTA_RANGE)
         self.value += delta
 

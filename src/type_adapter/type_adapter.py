@@ -16,7 +16,7 @@ class TypeAdapter[T](ABC):
 
     @classmethod
     @abstractmethod
-    def initialize(cls, adapted_type: AdaptedType, initial_value: T | None = None) -> Self:
+    def initialize(cls, random, adapted_type: AdaptedType, initial_value: T | None = None) -> Self:
         '''
         create an instance of the current class.
         caller can optionally provide an initial value.
@@ -32,7 +32,7 @@ class TypeAdapter[T](ABC):
 
     @classmethod
     @abstractmethod
-    def crossover(cls, a: Self, b: Self) -> Self:
+    def crossover(cls, random, a: Self, b: Self) -> Self:
         '''
         define a crossover operation between two instances of the 
         following class
@@ -40,7 +40,7 @@ class TypeAdapter[T](ABC):
         pass
 
     @abstractmethod
-    def mutate(self) -> None:
+    def mutate(self, random) -> None:
         '''
         mutate the current instance of the class
         '''

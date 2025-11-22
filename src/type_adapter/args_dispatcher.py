@@ -14,7 +14,7 @@ class ArgsDispatcher[**TParam, TReturn]:
 
     @classmethod
     def initialize(
-        cls, fn: Callable[TParam, TReturn], initial_guesses: dict[str, Any] | None = None
+        cls, random, fn: Callable[TParam, TReturn], initial_guesses: dict[str, Any] | None = None
     ) -> Self:
         if initial_guesses is None:
             initial_guesses = {}
@@ -28,7 +28,7 @@ class ArgsDispatcher[**TParam, TReturn]:
             adapter = TypeAdapterCollection.get_adapter_static(raw_type)
             initial_guess = initial_guesses.pop(arg_name, None)
             args.append(
-                adapter.initialize(adapted_type, initial_guess)
+                adapter.initialize(random, adapted_type, initial_guess)
             )
         return cls(args)
 
@@ -42,15 +42,15 @@ class ArgsDispatcher[**TParam, TReturn]:
         """
         return tuple(x.get_value() for x in self.args)
 
-    def mutate(self) -> None:
+    def mutate(self, random) -> None:
         for arg in self.args:
-            arg.mutate()
+            arg.mutate(random)
 
     @classmethod
-    def crossover(cls, a: Self, b: Self) -> Self:
+    def crossover(cls, random, a: Self, b: Self) -> Self:
         new_list = list[TypeAdapter]()
         for ia, ib in zip(a.args, b.args):
             adapter = ia.__class__
-            new_list.append(adapter.crossover(ia, ib))
+            new_list.append(adapter.crossover(random ,ia, ib))
         return cls(new_list)
 

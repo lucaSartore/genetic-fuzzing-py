@@ -5,17 +5,17 @@ import random
 class UnionAdapter(TypeAdapter[Union]):
 
     @classmethod
-    def initialize(cls, adapted_type: AdaptedType, initial_value: Union[Any,Any] | None = None) -> Self:
+    def initialize(cls, random, adapted_type: AdaptedType, initial_value: Union[Any,Any] | None = None) -> Self:
         pass
 
     def get_value(self) -> Union[Any,Any]:
         pass
 
     @classmethod
-    def crossover(cls, a: UnionAdapter, b: UnionAdapter) -> UnionAdapter: #type: ignore
+    def crossover(cls, random, a: UnionAdapter, b: UnionAdapter) -> UnionAdapter: #type: ignore
         pass
 
-    def mutate(self) -> None:
+    def mutate(self, random) -> None:
         pass
 
 
