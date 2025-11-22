@@ -2,14 +2,15 @@ from type_adapter.type_adapter import AdaptedType, TypeAdapter
 from typing import Self
 import random
 
-MUTATION_DELTA_RANGE = [-2, -1, 0, 0, 0, 1, 2]
+MUTATION_DELTA_RANGE = [-2, -1, 0, 1, 2]
 
 class IntAdapter(TypeAdapter[int]):
 
     @classmethod
     def initialize(cls, adapted_type: AdaptedType, initial_value: int | None = None) -> Self:
         assert adapted_type == int
-        value = initial_value if initial_value is not None else random.randint(0,1000)
+        value = 0
+        # value = initial_value if initial_value is not None else random.randint(0,1000)
         return cls(value)
 
     def __init__(self, value: int) -> None:
@@ -20,7 +21,9 @@ class IntAdapter(TypeAdapter[int]):
 
     @classmethod
     def crossover(cls, a: IntAdapter, b: IntAdapter) -> IntAdapter: #type: ignore
-        new = random.randint(a.value, b.value)
+        start = min(a.value, b.value)
+        end = min(a.value, b.value)
+        new = random.randint(start, end)
         return IntAdapter(new)
 
 
