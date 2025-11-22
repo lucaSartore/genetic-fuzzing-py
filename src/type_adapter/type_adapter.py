@@ -1,8 +1,6 @@
 from abc import ABC, abstractmethod
-from annotationlib import get_annotate_from_class_namespace
-from os import stat
 from types import GenericAlias
-from typing import Self, TypeAlias, TypeAliasType, Union, Any
+from typing import Self, Any
 
 AdaptedType = type | GenericAlias
 
