@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import Self
 from coverage_calc_lines import CoverageTester, ExecutionResult
+from dataset.output.count_and_say import count_and_say
 from inspyred_individual import InspyredIndividual
 from strategy.strategy import Strategy
 from dataclasses import dataclass
@@ -13,21 +14,17 @@ from inspyred import ec
 @dataclass
 class InputBagSettings():
     num_inputs: int = 25
-    num_individuals: int = 10
-    num_generations: int = 10
+    num_individuals: int = 50
+    num_generations: int = 500
 
 class Individual:
     def __init__(self, args_dispatchers: list[ArgsDispatcher]) -> None:
         self.args_dispatchers = args_dispatchers
 
     def evaluate(self, tester: CoverageTester):
-        results: list[ExecutionResult] = []
-        for dispatcher in self.args_dispatchers:
-            args = dispatcher.get_args()
-            result = tester.run_test(args)
-            results.append(result)
-        merged_result = results[0].merge_all(results[1:])
-        return merged_result.fraction_covered()
+        args = [d.get_args() for d in self.args_dispatchers]
+        result = tester.run_test(args)
+        return result.fraction_covered()
 
     def mutate(self, random):
         for dispatcher in self.args_dispatchers:
@@ -57,7 +54,7 @@ class InputBag(Strategy[InputBagSettings]):
 
     def run(self) -> list[tuple]:
         rand = random.Random()
-        rand.seed(1)
+        rand.seed(2347)
 
         def generate_individual(random, args):
             return Individual([
@@ -67,6 +64,7 @@ class InputBag(Strategy[InputBagSettings]):
 
         def evaluate_individual(candidates: list[Individual], args):
             return [ c.evaluate(self.tester) for c in candidates]
+            # return [ 1 for c in candidates]
 
         def mutate_operator(random, candidates: list[Individual], args):
             print("mutate operator")
@@ -83,9 +81,9 @@ class InputBag(Strategy[InputBagSettings]):
                 to_return.append(Individual.corssover(random,a,b))
             return to_return
 
-        def observer(population, num_generations, num_evaluations, args):
-            print(f'Gen: {num_generations}')
-
+        def observer(population: list[InspyredIndividual[Individual]], num_generations, num_evaluations, args):
+            best_score = max([x.fitness for x in population])
+            print(f'Gen: {num_generations}, score: {best_score}')
 
         # 2. Instantiate the Evolutionary Computation (EC) engine
         ea = ec.EvolutionaryComputation(rand)
@@ -111,7 +109,7 @@ class InputBag(Strategy[InputBagSettings]):
             
             # Algorithm parameters
             pop_size=self.settings.num_individuals,
-            num_selected=20, # Number of individuals selected for breeding
+            num_selected=5, # Number of individuals selected for breeding
         )
         
         best = max(final_pop, key = lambda x: x.fitness)

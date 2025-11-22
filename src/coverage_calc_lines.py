@@ -75,16 +75,21 @@ class CoverageTester:
         assert callable(self.export_fn)
     
     
-    def run_test(self, args: tuple):
+    def run_test(self, args: tuple | list[tuple]):
+
+        if type(args) == tuple:
+            args = [args]
+
         cov = coverage.Coverage(data_file=None)
         try:
             cov.erase()
             cov.start()
-            try:
-                self.export_fn(*args)
-            except Exception:
-                # swallow exceptions from the tested function
-                pass
+            for a in args:
+                try:
+                    self.export_fn(*a)
+                except Exception:
+                    # swallow exceptions from the tested function
+                    pass
         finally:
             cov.stop()
         (_, total_lines, _, missing_lines, _) = cov.analysis2(self.module.__file__)
