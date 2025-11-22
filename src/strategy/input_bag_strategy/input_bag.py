@@ -1,4 +1,5 @@
-from typing import Self, Tuple, final
+from __future__ import annotations
+from typing import Self
 from coverage_calc_lines import CoverageTester, ExecutionResult
 from inspyred_individual import InspyredIndividual
 from strategy.strategy import Strategy
@@ -8,9 +9,10 @@ from type_adapter.args_dispatcher import ArgsDispatcher
 import random
 from inspyred import ec
 
+
 @dataclass
 class InputBagSettings():
-    num_inputs: int = 10
+    num_inputs: int = 25
     num_individuals: int = 10
     num_generations: int = 10
 
@@ -64,27 +66,39 @@ class InputBag(Strategy[InputBagSettings]):
             return [ c.evaluate(self.tester) for c in candidates]
 
         def mutate_operator(random, candidates: list[Individual], args):
+            print("mutate operator")
             for candidate in candidates:
                 candidate.mutate()
             return candidates
 
-        def crossover_operator(random, parents: list[Tuple[Individual, Individual]], args):
-            offspring: list[Individual] = []
-            for a, b in parents:
-                child = Individual.corssover(a,b)
-                offspring.append(child)
-            return offspring
+        # def crossover_operator(random, parents: list[Tuple[Individual, Individual]], args):
+        def crossover_operator(random, candidates: list[Individual], args):
+            to_return = []
+            for _ in range(len(candidates)):
+                a = random.choice(candidates)
+                b = random.choice(candidates)
+                to_return.append(Individual.corssover(a,b))
+            return to_return
+
+        def observer(population, num_generations, num_evaluations, args):
+            print(f'Gen: {num_generations}')
 
         rand = random.Random()
         rand.seed(1)
 
         # 2. Instantiate the Evolutionary Computation (EC) engine
-        ea = ec.GA(rand)
+        ea = ec.EvolutionaryComputation(rand)
         
         # 3. Attach the custom functions (the adapters)
         ea.selector = ec.selectors.tournament_selection
-        ea.variator = [mutate_operator, crossover_operator]
+        # ea.variator = [crossover_operator, mutate_operator]
+        ea.variator = [crossover_operator, mutate_operator]
+        # ea.variator = [ec.variators.uniform_crossover, mutate_operator]
         ea.replacer = ec.replacers.generational_replacement
+        def terminator(population, num_generations, num_evaluations, args):
+            return num_generations == self.settings.num_generations
+        ea.terminator = terminator
+        ea.observer = observer
         
         # 4. Run the evolution
         # Note that we pass the custom generator and evaluator here
@@ -92,12 +106,11 @@ class InputBag(Strategy[InputBagSettings]):
             # Required parameters
             generator=generate_individual,
             evaluator=evaluate_individual,
+            maximize=True,
             
             # Algorithm parameters
-            pop_size=100,
+            pop_size=self.settings.num_individuals,
             num_selected=20, # Number of individuals selected for breeding
-            max_generations=100,
-            
         )
         
         best = max(final_pop, key = lambda x: x.fitness)
