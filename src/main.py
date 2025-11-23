@@ -9,11 +9,11 @@ def main():
     strategy = NovelSearch.initialize({
     # strategy = RandomStrategy.initialize({
         # "name": "int_to_roman",
-        "name": "roman_to_int",
+        # "name": "roman_to_int",
         # "name": "decode_string",
         # "name": "str_fun",
         # "name": "levenshtein_distance",
-        # "name": "count_bool",
+        "name": "count_bool",
         # "name": "is_valid_ip_address",
         "description": ""
     })

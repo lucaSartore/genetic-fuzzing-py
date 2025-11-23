@@ -93,7 +93,7 @@ class InputBag(Strategy[InputBagSettings]):
                 to_return.append(Individual.crossover(random,a,b))
             return to_return
 
-        def observer(population: list[InspyredIndividual[Individual]], num_generations, num_evaluations, args):
+        def observer(population: list[InspyredIndividual[Individual, float]], num_generations, num_evaluations, args):
             best_score = max([x.fitness for x in population])
             print(f'Gen: {num_generations}, score: {best_score}')
 
@@ -113,7 +113,7 @@ class InputBag(Strategy[InputBagSettings]):
         
         # 4. Run the evolution
         # Note that we pass the custom generator and evaluator here
-        final_pop: list[InspyredIndividual[Individual]] = ea.evolve(
+        final_pop: list[InspyredIndividual[Individual, float]] = ea.evolve(
             # Required parameters
             generator=generate_individual,
             evaluator=evaluate_individual,

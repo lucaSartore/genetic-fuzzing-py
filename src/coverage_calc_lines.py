@@ -1,4 +1,5 @@
 
+from os import stat
 from types import ModuleType
 from typing import Callable
 from dataset.functions_list import FUNCTIONS, FunctionType
@@ -16,6 +17,10 @@ class ExecutionResult:
     def __init__(self, total_lines: list[int], missing_lines: list[int]):
         self.total_lines = total_lines
         self.missing_lines = missing_lines
+
+    @property
+    def executed_lines(self) -> set[int]:
+        return set(self.total_lines) - set(self.missing_lines)
     
     def fraction_covered(self) -> float:
         covered_lines = len(self.total_lines) - len(self.missing_lines)
@@ -34,7 +39,13 @@ class ExecutionResult:
         val = len(both_executed)
         total_len = len(self.total_lines)
         return val/total_len if total_len>0 else 0.0
-    
+
+    def novelty(self, baseline: "ExecutionResult") -> float:
+        novel_lines = self.executed_lines - baseline.executed_lines
+        total_len = len(self.total_lines)
+        val = len(novel_lines)
+        return val/total_len if total_len>0 else 0.0
+
     def merge_one(self, other: "ExecutionResult")-> "ExecutionResult":
         if self.total_lines != other.total_lines:
             raise ValueError("cannot merge ExecutionResults with different total lines")
@@ -46,6 +57,15 @@ class ExecutionResult:
         for other in others:
             self.merge_one(other)
         return self
+
+    @staticmethod
+    def merge_list(list: list["ExecutionResult"])-> "ExecutionResult":
+        assert len(list) != 0, "can't merge empty list"
+        first = list[0]
+        for e in list[1:]:
+            first.merge_one(e)
+        return first
+    
     
     def __repr__(self) -> str:
         return f"<ExecutionResult covered={self.fraction_covered():.2%} total={len(self.total_lines)} missing={len(self.missing_lines)}>"

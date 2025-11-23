@@ -1,9 +1,6 @@
 from __future__ import annotations
-from functools import total_ordering
-from typing import Self
-
-from inspyred.ec.variators import mutator
-from numpy import test
+from typing import Self, cast
+from rich.pretty import pprint
 from coverage_calc_lines import CoverageTester, ExecutionResult
 from inspyred_individual import InspyredIndividual
 from strategy.strategy import Strategy
@@ -17,10 +14,9 @@ from util.mutable_probability import MutableProbability
 
 @dataclass
 class NovelSearchSettings():
-    num_inputs: int = 100
-    num_individuals: int = 50
-    num_generations: int = 500
-    num_selected: int = 10
+    num_individuals: int = 1
+    num_generations: int = 5000
+    num_selected: int = 1
 
 
 class NovelSearch(Strategy[NovelSearchSettings]):
@@ -34,7 +30,7 @@ class NovelSearch(Strategy[NovelSearchSettings]):
         self.tester = CoverageTester(function)
         self.function = self.tester.export_fn
         self.settings = settings
-
+        self.current_coverage: ExecutionResult | None = None
     def run(self) -> list[tuple]:
         rand = Random()
         rand.seed(2347)
@@ -58,16 +54,31 @@ class NovelSearch(Strategy[NovelSearchSettings]):
                     candidate.mutate(random)
             return candidates
 
+
         def novelty_replacer(
             random: Random,
-            population: list[ArgsDispatcher],
-            parents: list[ArgsDispatcher],
-            offspring: list[ArgsDispatcher],
+            population: list[InspyredIndividual[ArgsDispatcher, ExecutionResult]],
+            parents: list[InspyredIndividual[ArgsDispatcher, ExecutionResult]],
+            offspring: list[InspyredIndividual[ArgsDispatcher, ExecutionResult]],
             args
         ):
-            print("novelty_replacer")
-            return population
-            pass
+            
+            if self.current_coverage is None:
+                self.current_coverage = ExecutionResult.merge_list([x.fitness for x in population])
+
+            individuals_to_add = [
+                x
+                for x in offspring
+                if x.fitness.novelty(self.current_coverage) != 0
+            ]
+
+            to_return =  population + individuals_to_add
+            self.current_coverage = self.current_coverage.merge_all([
+                x.fitness
+                for x in individuals_to_add
+            ])
+
+            return to_return
 
         def crossover_operator(random: Random, candidates: list[ArgsDispatcher], args):
             to_return = []
@@ -77,10 +88,10 @@ class NovelSearch(Strategy[NovelSearchSettings]):
                 to_return.append(ArgsDispatcher.crossover(random,a,b))
             return to_return
 
-        def observer(population: list[InspyredIndividual[ArgsDispatcher]], num_generations, num_evaluations, args):
-            pass
-            # best_score = max([x.fitness for x in population])
-            # print(f'Gen: {num_generations}, score: {best_score}')
+        def observer(population: list[InspyredIndividual[ArgsDispatcher, ExecutionResult]], num_generations, num_evaluations, args):
+            if self.current_coverage == None:
+                return
+            print(f'Gen: {num_generations}, score: {self.current_coverage.fraction_covered()}, pop_size: {len(population)}')
 
         # 2. Instantiate the Evolutionary Computation (EC) engine
         ea = ec.EvolutionaryComputation(rand)
@@ -90,15 +101,18 @@ class NovelSearch(Strategy[NovelSearchSettings]):
         # ea.variator = [crossover_operator, mutate_operator]
         ea.variator = [crossover_operator, mutate_operator] #type: ignore
         # ea.variator = [ec.variators.uniform_crossover, mutate_operator]
-        ea.replacer = ec.replacers.steady_state_replacement
+        ea.replacer = novelty_replacer
+        # ea.replacer = ec.replacers.comma_replacement
+
         def terminator(population, num_generations, num_evaluations, args):
             return num_generations == self.settings.num_generations
+
         ea.terminator = terminator
         ea.observer = observer
         
         # 4. Run the evolution
         # Note that we pass the custom generator and evaluator here
-        final_pop: list[InspyredIndividual[ArgsDispatcher]] = ea.evolve(
+        final_pop = cast(list[InspyredIndividual[ArgsDispatcher, ExecutionResult]], ea.evolve(
             # Required parameters
             generator=generate_individual,
             evaluator=evaluate_individual,
@@ -107,12 +121,13 @@ class NovelSearch(Strategy[NovelSearchSettings]):
             # Algorithm parameters
             pop_size=self.settings.num_individuals,
             num_selected=self.settings.num_selected, # Number of individuals selected for breeding
-        )
+        ))
         
-        best = max(final_pop, key = lambda x: x.fitness)
-        
-        print(f"best score = {best.fitness}")
-        args = best.candidate.get_args()
-        print(f"args = {args}")
-        return [args]
+        assert self.current_coverage != None, "logical error: final score not calculated"
+        print(f'final score: {self.current_coverage.fraction_covered()}')
+        final_pop.sort(key= lambda x: x.fitness.fraction_covered(), reverse = True)
+        args = [x.candidate.get_args() for x in final_pop]
+        print(f"args:")
+        pprint(args)
+        return args
 
