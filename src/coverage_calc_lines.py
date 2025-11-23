@@ -50,6 +50,15 @@ class ExecutionResult:
     def __repr__(self) -> str:
         return f"<ExecutionResult covered={self.fraction_covered():.2%} total={len(self.total_lines)} missing={len(self.missing_lines)}>"
 
+    def __lt__(self, other: ExecutionResult):
+        self.fraction_covered().__lt__(other.fraction_covered())
+    def __gt__(self, other: ExecutionResult):
+        self.fraction_covered().__gt__(other.fraction_covered())
+    def __le__(self, other: ExecutionResult):
+        self.fraction_covered().__le__(other.fraction_covered())
+    def __ge__(self, other: ExecutionResult):
+        self.fraction_covered().__ge__(other.fraction_covered())
+
 
 class CoverageTester:
     

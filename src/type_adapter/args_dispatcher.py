@@ -60,3 +60,4 @@ class ArgsDispatcher[**TParam, TReturn]:
             new_list.append(adapter.crossover(random ,ia, ib))
         return cls(new_list, mp)
 
+

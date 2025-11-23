@@ -40,7 +40,7 @@ class Individual:
         return [x.get_args() for x in self.args_dispatchers]
 
     @staticmethod
-    def corssover(random, a: Individual, b: Individual):
+    def crossover(random, a: Individual, b: Individual):
         mp = MutableProbability.crossover(random, a.mutation_probability, b.mutation_probability)
         return Individual([
             ArgsDispatcher.crossover(random, da, db)
@@ -90,7 +90,7 @@ class InputBag(Strategy[InputBagSettings]):
             for _ in range(len(candidates)):
                 a = random.choice(candidates)
                 b = random.choice(candidates)
-                to_return.append(Individual.corssover(random,a,b))
+                to_return.append(Individual.crossover(random,a,b))
             return to_return
 
         def observer(population: list[InspyredIndividual[Individual]], num_generations, num_evaluations, args):
