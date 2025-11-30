@@ -1,4 +1,4 @@
-from coverage_calc_lines import CoverageTester
+
 from strategy.input_bag_strategy.input_bag import InputBag
 from strategy.novel_search_strategy.novel_search import NovelSearch
 from strategy.random_strategy.random_strategy import RandomStrategy
@@ -6,7 +6,7 @@ from strategy.random_strategy.random_strategy import RandomStrategy
 
 def main():
     # strategy = InputBag.initialize({
-    strategy = NovelSearch.initialize({
+    strategy = NovelSearch.with_line_coverage({
     # strategy = RandomStrategy.initialize({
         # "name": "int_to_roman",
         # "name": "roman_to_int",

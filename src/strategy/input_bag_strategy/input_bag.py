@@ -2,7 +2,7 @@ from __future__ import annotations
 from typing import Self
 
 from inspyred.ec.variators import mutator
-from coverage_calc_lines import CoverageTester
+from coverage_strategy.coverage import CoverageTester
 from inspyred_individual import InspyredIndividual
 from strategy.strategy import Strategy
 from dataclasses import dataclass
