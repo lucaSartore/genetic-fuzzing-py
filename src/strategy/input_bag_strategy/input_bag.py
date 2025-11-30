@@ -1,8 +1,8 @@
 from __future__ import annotations
-from typing import Self
+from typing import Self, Type
 
 from inspyred.ec.variators import mutator
-from coverage_strategy.coverage import CoverageTester
+from coverage_strategy import CoverageTester, LineCoverageTester, BranchCoverageTester
 from inspyred_individual import InspyredIndividual
 from strategy.strategy import Strategy
 from dataclasses import dataclass
@@ -19,6 +19,7 @@ class InputBagSettings():
     num_individuals: int = 50
     num_generations: int = 500
     num_selected: int = 10
+    coverage_tester_class: Type[CoverageTester] = LineCoverageTester
 
 class Individual:
     def __init__(self, args_dispatchers: list[ArgsDispatcher], mutation_probability = MutableProbability(0.1, 0.01)) -> None:
@@ -54,10 +55,40 @@ class InputBag(Strategy[InputBagSettings]):
             settings = InputBagSettings()
         return cls(function, settings)
 
+    @classmethod
+    def with_line_coverage(cls, function: FunctionType, settings: InputBagSettings | None = None) -> Self:
+        """Create InputBag with line coverage tester."""
+        if settings is None:
+            settings = InputBagSettings()
+        settings.coverage_tester_class = LineCoverageTester
+        return cls(function, settings)
+    
+    @classmethod 
+    def with_branch_coverage(cls, function: FunctionType, settings: InputBagSettings | None = None) -> Self:
+        """Create InputBag with branch coverage tester."""
+        if settings is None:
+            settings = InputBagSettings()
+        settings.coverage_tester_class = BranchCoverageTester
+        return cls(function, settings)
+
     def __init__(self, function: FunctionType, settings: InputBagSettings):
-        self.tester = CoverageTester(function)
+        self.tester = settings.coverage_tester_class(function)
         self.function = self.tester.export_fn
         self.settings = settings
+        self.function_def = function  # Store original function definition for switching
+
+    def set_coverage_type(self, coverage_type: str) -> None:
+        """Switch between different coverage types."""
+        if coverage_type == "line":
+            self.settings.coverage_tester_class = LineCoverageTester
+        elif coverage_type == "branch":
+            self.settings.coverage_tester_class = BranchCoverageTester
+        else:
+            raise ValueError(f"Unknown coverage type: {coverage_type}. Use 'line' or 'branch'.")
+        
+        # Recreate the tester with the new coverage type
+        self.tester = self.settings.coverage_tester_class(self.function_def)
+        self.function = self.tester.export_fn
 
     def run(self) -> list[tuple]:
         rand = Random()
