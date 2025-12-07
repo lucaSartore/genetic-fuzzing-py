@@ -3,7 +3,6 @@ from strategy.input_bag_strategy.input_bag import InputBag
 from strategy.novel_search_strategy.novel_search import NovelSearch
 from strategy.random_strategy.random_strategy import RandomStrategy
 import argparse
-import sys
 
 from strategy.strategy import Strategy, StrategyEnum
 

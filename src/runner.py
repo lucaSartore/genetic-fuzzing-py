@@ -14,7 +14,7 @@ MAX_WORKERS = 20  # Set your desired maximum number of parallel processes
 def main():
     results = []
     with ProcessPoolExecutor(max_workers=MAX_WORKERS) as executor:
-        futures = [executor.submit(run_func, func["name"], "random") for func in FUNCTIONS[:30]]
+        futures = [executor.submit(run_func, func["name"], "random", True) for func in FUNCTIONS[:30]]
         for future in as_completed(futures):
             func_name, stdout, stderr, returncode = future.result()
             results.append({

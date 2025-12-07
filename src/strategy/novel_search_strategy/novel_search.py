@@ -1,9 +1,9 @@
 from __future__ import annotations
-from typing import Self, cast, Type
+from typing import cast
 from rich.pretty import pprint
-from coverage_strategy import CoverageTester, ExecutionResult, LineCoverageTester, BranchCoverageTester
+from coverage_strategy import  ExecutionResult
 from inspyred_individual import InspyredIndividual
-from strategy.strategy import Strategy
+from strategy.strategy import SettingsBaseClass, Strategy
 from dataclasses import dataclass
 from dataset.functions_list import FunctionType
 from type_adapter.args_dispatcher import ArgsDispatcher
@@ -13,55 +13,18 @@ from util.mutable_probability import MutableProbability
 
 
 @dataclass
-class NovelSearchSettings():
+class NovelSearchSettings(SettingsBaseClass):
     num_individuals: int = 1
     num_generations: int = 5000
     num_selected: int = 1
-    coverage_tester_class: Type[CoverageTester] = LineCoverageTester
 
 
 class NovelSearch(Strategy[NovelSearchSettings]):
-    @classmethod
-    def initialize(cls, function: FunctionType, settings: NovelSearchSettings | None = None) -> Self:
-        if settings is None:
-            settings = NovelSearchSettings()
-        return cls(function, settings)
 
-    @classmethod
-    def with_line_coverage(cls, function: FunctionType, settings: NovelSearchSettings | None = None) -> Self:
-        """Create NovelSearch with line coverage tester."""
-        if settings is None:
-            settings = NovelSearchSettings()
-        settings.coverage_tester_class = LineCoverageTester
-        return cls(function, settings)
-    
-    @classmethod 
-    def with_branch_coverage(cls, function: FunctionType, settings: NovelSearchSettings | None = None) -> Self:
-        """Create NovelSearch with branch coverage tester."""
-        if settings is None:
-            settings = NovelSearchSettings()
-        settings.coverage_tester_class = BranchCoverageTester
-        return cls(function, settings)
-
-    def __init__(self, function: FunctionType, settings: NovelSearchSettings):
-        self.tester = settings.coverage_tester_class(function)
-        self.function = self.tester.export_fn
-        self.settings = settings
-        self.function_def = function  # Store original function definition for switching
+    def __init__(self, function: FunctionType, settings: NovelSearchSettings, log_dir: str):
+        super().__init__(function, settings, log_dir)
         self.current_coverage: ExecutionResult | None = None
 
-    def set_coverage_type(self, coverage_type: str) -> None:
-        """Switch between different coverage types."""
-        if coverage_type == "line":
-            self.settings.coverage_tester_class = LineCoverageTester
-        elif coverage_type == "branch":
-            self.settings.coverage_tester_class = BranchCoverageTester
-        else:
-            raise ValueError(f"Unknown coverage type: {coverage_type}. Use 'line' or 'branch'.")
-        
-        # Recreate the tester with the new coverage type
-        self.tester = self.settings.coverage_tester_class(self.function_def)
-        self.function = self.tester.export_fn
     def run(self) -> list[tuple]:
         rand = Random()
         rand.seed(2347)

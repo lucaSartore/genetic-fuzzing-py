@@ -1,7 +1,6 @@
 from __future__ import annotations
-from typing import Self, Type
-from coverage_strategy import CoverageTester, LineCoverageTester, BranchCoverageTester
-from strategy.strategy import Strategy
+from coverage_strategy import LineCoverageTester, BranchCoverageTester
+from strategy.strategy import SettingsBaseClass, Strategy
 from dataclasses import dataclass
 from dataset.functions_list import FunctionType
 from type_adapter.args_dispatcher import ArgsDispatcher
@@ -11,38 +10,12 @@ from strategy.input_bag_strategy.input_bag import Individual
 
 
 @dataclass
-class RandomStrategySettings():
+class RandomStrategySettings(SettingsBaseClass):
     num_inputs: int = 50000
-    coverage_tester_class: Type[CoverageTester] = LineCoverageTester
 
 class RandomStrategy(Strategy[RandomStrategySettings]):
-    @classmethod
-    def initialize(cls, function: FunctionType, settings: RandomStrategySettings | None = None) -> Self:
-        if settings is None:
-            settings = RandomStrategySettings()
-        return cls(function, settings)
-
-    @classmethod
-    def with_line_coverage(cls, function: FunctionType, settings: RandomStrategySettings | None = None) -> Self:
-        """Create RandomStrategy with line coverage tester."""
-        if settings is None:
-            settings = RandomStrategySettings()
-        settings.coverage_tester_class = LineCoverageTester
-        return cls(function, settings)
-    
-    @classmethod 
-    def with_branch_coverage(cls, function: FunctionType, settings: RandomStrategySettings | None = None) -> Self:
-        """Create RandomStrategy with branch coverage tester."""
-        if settings is None:
-            settings = RandomStrategySettings()
-        settings.coverage_tester_class = BranchCoverageTester
-        return cls(function, settings)
-
-    def __init__(self, function: FunctionType, settings: RandomStrategySettings):
-        self.tester = settings.coverage_tester_class(function)
-        self.function = self.tester.export_fn
-        self.settings = settings
-        self.function_def = function  # Store original function definition for switching
+    def __init__(self, function: FunctionType, settings: RandomStrategySettings, log_dir: str):
+        super().__init__(function, settings, log_dir)
 
     def set_coverage_type(self, coverage_type: str) -> None:
         """Switch between different coverage types."""
