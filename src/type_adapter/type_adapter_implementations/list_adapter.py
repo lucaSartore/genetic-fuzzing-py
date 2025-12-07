@@ -56,9 +56,9 @@ class ListAdapter(TypeAdapter[list]):
 
         if choice <= 50:
             for x in self.value:
-                x.mutate()
+                x.mutate(random)
         elif choice <= 85:
-            self.value.append(self.adapter.initialize(self.inner_type))
+            self.value.append(self.adapter.initialize(random, self.inner_type))
         elif len(self.value) > 0:
             self.value.pop()
 

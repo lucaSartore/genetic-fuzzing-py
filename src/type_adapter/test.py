@@ -1,6 +1,5 @@
-
-
 from type_adapter.args_dispatcher import ArgsDispatcher
+from random import Random
 
 
 def fn(a: int, b: bool, c: list[int], d: list[bool], e: list[list[int]]):
@@ -9,9 +8,10 @@ def fn(a: int, b: bool, c: list[int], d: list[bool], e: list[list[int]]):
 
 
 def test_args_dispatcher():
-    ad = ArgsDispatcher.initialize(fn)
+    rand = Random()
+    ad = ArgsDispatcher.initialize(rand, fn)
     for _ in range(100): 
-        ad.mutate()
+        ad.mutate(rand)
         args = ad.get_args()
         fn(*args)
     
