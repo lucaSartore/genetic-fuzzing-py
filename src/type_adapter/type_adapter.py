@@ -1,8 +1,11 @@
 from abc import ABC, abstractmethod
 from types import GenericAlias
-from typing import Self, Any
+from typing import Self, Any, List, cast
 
 AdaptedType = type | GenericAlias
+
+# "creative" way to import non public type typing._GenericAlias
+_GenericAliasType = type(List[int])
 
 class TypeAdapter[T](ABC):
     '''
@@ -77,5 +80,10 @@ class TypeAdapter[T](ABC):
             return to_parse
         if type(to_parse) == GenericAlias:
             return to_parse
+        if type(to_parse) == _GenericAliasType:
+            return GenericAlias(
+                to_parse.__origin__, #type: ignore
+                to_parse.__args__ #type: ignore
+            )
         raise Exception(f'unable to parse type {to_parse}')
 
