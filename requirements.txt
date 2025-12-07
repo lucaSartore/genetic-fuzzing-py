@@ -2,4 +2,5 @@ coverage==7.11.3
 inspyred==1.0.3
 numpy==2.3.5
 rich==14.2.0
+argparse==1.4.0
 

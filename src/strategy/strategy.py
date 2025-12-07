@@ -1,7 +1,8 @@
-from typing import Self
+from typing import Self, Literal
 from dataset.functions_list import FunctionType
 from abc import ABC, abstractmethod
 
+StrategyEnum = Literal["random", "input_bag", "novelty_search"]
 
 class Strategy[TSettings](ABC):
     @classmethod
