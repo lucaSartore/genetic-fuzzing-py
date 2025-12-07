@@ -532,9 +532,5 @@ FUNCTIONS: list[FunctionType] = [
     {
         "name": "schedule_task_dag",
         "description": "Schedules tasks with dependencies, resource constraints, priorities, and multiple scheduling strategies.",
-    },
-    {
-        "name": "validate_workflow_transitions",
-        "description": "Validates workflow state transitions with role-based permissions, preconditions, and side-effect validators.",
-    },
+    }
 ]
