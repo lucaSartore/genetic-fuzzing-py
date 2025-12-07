@@ -14,6 +14,10 @@ class RandomStrategySettings(SettingsBaseClass):
     num_inputs: int = 50000
 
 class RandomStrategy(Strategy[RandomStrategySettings]):
+    @classmethod
+    def default_settings(cls) -> RandomStrategySettings:
+        return RandomStrategySettings()
+
     def __init__(self, function: FunctionType, settings: RandomStrategySettings, log_dir: str):
         super().__init__(function, settings, log_dir)
 
@@ -41,6 +45,9 @@ class RandomStrategy(Strategy[RandomStrategySettings]):
 
         score = individual.evaluate(self.tester)
 
+        # log twice to make the graph look prettier
+        self.log(score)
+        self.log(score)
         print(f"best score = {score}")
         args = individual.get_args()
         # print(f"args = {args}")

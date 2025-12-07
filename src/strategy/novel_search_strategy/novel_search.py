@@ -20,6 +20,9 @@ class NovelSearchSettings(SettingsBaseClass):
 
 
 class NovelSearch(Strategy[NovelSearchSettings]):
+    @classmethod
+    def default_settings(cls) -> NovelSearchSettings:
+        return NovelSearchSettings()
 
     def __init__(self, function: FunctionType, settings: NovelSearchSettings, log_dir: str):
         super().__init__(function, settings, log_dir)
@@ -85,7 +88,7 @@ class NovelSearch(Strategy[NovelSearchSettings]):
         def observer(population: list[InspyredIndividual[ArgsDispatcher, ExecutionResult]], num_generations, num_evaluations, args):
             if self.current_coverage == None:
                 return
-            print(f'Gen: {num_generations}, score: {self.current_coverage.fraction_covered()}, pop_size: {len(population)}')
+            self.log(self.current_coverage.fraction_covered())
 
         # 2. Instantiate the Evolutionary Computation (EC) engine
         ea = ec.EvolutionaryComputation(rand)

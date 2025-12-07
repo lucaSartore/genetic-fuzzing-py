@@ -41,7 +41,7 @@ def main():
     strategy = strategy_type.with_branch_coverage({
         "name": function,
         "description": ""
-    })
+    }, None, logdir)
     strategy.run()
     
 

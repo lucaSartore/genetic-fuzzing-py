@@ -86,7 +86,7 @@ class InputBag(Strategy[InputBagSettings]):
 
         def observer(population: list[InspyredIndividual[Individual, float]], num_generations, num_evaluations, args):
             best_score = max([x.fitness for x in population])
-            print(f'Gen: {num_generations}, score: {best_score}')
+            self.log(best_score)
 
         # 2. Instantiate the Evolutionary Computation (EC) engine
         ea = ec.EvolutionaryComputation(rand)
