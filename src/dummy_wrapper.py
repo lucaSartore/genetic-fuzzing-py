@@ -6,9 +6,9 @@ import sys
 
 def main():
     
-    strategy = NovelSearch.with_branch_coverage({
-    # strategy = NovelSearch.initialize({
-    # strategy = RandomStrategy.initialize({
+    #strategy = InputBag.with_branch_coverage({
+    # strategy = NovelSearch.with_branch_coverage({
+    strategy = RandomStrategy.with_branch_coverage({
         #"name": "int_to_roman",
         # "name": "roman_to_int",
         # "name": "decode_string",

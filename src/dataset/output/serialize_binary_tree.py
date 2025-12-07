@@ -1,5 +1,6 @@
-# necessary imports (use only the python standard libraries)
-from typing import Any, List, Union, Dict, Optional
+
+
+from typing import Any
 
 # Define markers for serialization
 # NODE_NULL_MARKER represents a non-existent node (e.g., a null child reference).
@@ -8,7 +9,7 @@ NODE_NULL_MARKER = "#"
 VALUE_NONE_MARKER = "None_Val"
 
 
-def _get_node_components(node: Any) -> tuple[Any, Any, Any]:
+def _get_node_components(node: dict[str, Any]) -> tuple[Any, Any, Any]:
     """
     Auxiliary function to extract value, left child, and right child from a node.
 
@@ -22,7 +23,7 @@ def _get_node_components(node: Any) -> tuple[Any, Any, Any]:
       If the 'value' attribute is missing, the object itself is considered the node's value.
 
     Args:
-        node (Any): The node from which to extract components.
+        node (dict[str, Any]): The node from which to extract components.
 
     Returns:
         tuple[Any, Any, Any]: A tuple containing (value, left_child, right_child).
@@ -54,7 +55,7 @@ def _get_node_components(node: Any) -> tuple[Any, Any, Any]:
     return value, left_child, right_child
 
 
-def serialize_binary_tree(root: Any) -> str:
+def serialize_binary_tree(root: dict[str, Any]) -> str:
     """
     Serializes a (simulated) binary tree to a string using pre-order traversal.
 
@@ -75,7 +76,7 @@ def serialize_binary_tree(root: Any) -> str:
     a non-existent node.
 
     Args:
-        root (Any): The root of the binary tree. This can be a dict, an object
+        root (dict[str, Any]): The root of the binary tree. This can be a dict, an object
                     representing a node, or `None` if the tree is empty.
 
     Returns:
@@ -84,7 +85,7 @@ def serialize_binary_tree(root: Any) -> str:
     Example:
         # Define a simple class for demonstration purposes
         class TreeNode:
-            def __init__(self, val: Any, left: Any = None, right: Any = None):
+            def __init__(self, val: any, left: any = None, right: any = None):
                 self.value = val
                 self.left = left
                 self.right = right
@@ -142,7 +143,7 @@ def serialize_binary_tree(root: Any) -> str:
         # Expected output: "hello,#,#"
         # print(serialize_binary_tree("hello"))
     """
-    serialized_parts: List[str] = []
+    serialized_parts: list[str] = []
 
     def _traverse(node: Any) -> None:
         """

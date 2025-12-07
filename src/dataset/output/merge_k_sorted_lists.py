@@ -1,7 +1,6 @@
 import heapq
-from typing import List
 
-def merge_k_sorted_lists(lists: List[List[int]]) -> List[int]:
+def merge_k_sorted_lists(lists: list[list[int]]) -> list[int]:
     """
     Merges 'k' sorted lists into one sorted list using a min-heap (priority queue).
 
@@ -25,8 +24,8 @@ def merge_k_sorted_lists(lists: List[List[int]]) -> List[int]:
         >>> merge_k_sorted_lists([])
         []
     """
-    min_heap: List[tuple[int, int, int]] = []  # Stores (value, list_index, element_index_in_list)
-    result: List[int] = []
+    min_heap: list[tuple[int, int, int]] = []  # Stores (value, list_index, element_index_in_list)
+    result: list[int] = []
 
     # Initialize the min-heap with the first element from each non-empty list
     for i, lst in enumerate(lists):

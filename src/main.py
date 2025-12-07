@@ -13,7 +13,7 @@ def main():
         # "name": "decode_string",
         # "name": "str_fun",
         # "name": "levenshtein_distance",
-         "name": "count_bool",
+         "name": "serialize_binary_tree",
         # "name": "is_odd_for_dummys",
         # "name": "is_valid_ip_address",
         "description": ""
