@@ -4,6 +4,8 @@ import resource
 import os
 import shutil
 import pathlib
+from itertools import product
+from typing import get_args, cast
 
 from concurrent.futures import ProcessPoolExecutor, as_completed
 
@@ -14,7 +16,12 @@ MAX_WORKERS = 20  # Set your desired maximum number of parallel processes
 def main():
     results = []
     with ProcessPoolExecutor(max_workers=MAX_WORKERS) as executor:
-        futures = [executor.submit(run_func, func["name"], "random", True) for func in FUNCTIONS[:30]]
+        futures = [
+            executor.submit(run_func, func["name"], strategy, True)
+            for strategy, func in 
+            # product(list[StrategyEnum](["random"]), FUNCTIONS[:2] ) # only random strategy for quick test
+            product(get_args(StrategyEnum), FUNCTIONS[:2] ) # all strategies for full tests
+        ]
         for future in as_completed(futures):
             func_name, stdout, stderr, returncode = future.result()
             results.append({
