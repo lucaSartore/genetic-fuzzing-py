@@ -21,6 +21,9 @@ def n_queens_solver(n: int) -> list[list[str]]:
     if n == 0:
         return [[]] # Represents an empty board with 0 queens
 
+    if n > 10:
+        raise ValueError("n is too large; maximum allowed is 10.")
+
     results: list[list[str]] = []
 
     # current_placement[r] = c means a queen is placed at (row r, column c)

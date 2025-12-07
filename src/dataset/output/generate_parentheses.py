@@ -26,6 +26,8 @@ def generate_parentheses(n: int) -> List[str]:
         raise ValueError("Input 'n' must be a non-negative integer.")
     if n == 0:
         return [""]
+    if n >10: 
+        raise ValueError("n is too large; maximum allowed is 10.")
 
     result: List[str] = []
     

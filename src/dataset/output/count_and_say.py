@@ -29,6 +29,8 @@ def count_and_say(n: int) -> str:
     """
     if n < 1:
         raise ValueError("n must be a positive integer.")
+    if n > 20:
+        raise ValueError("n is too large; maximum allowed is 20.")
 
     # The first term of the sequence is "1".
     current_term = "1"
