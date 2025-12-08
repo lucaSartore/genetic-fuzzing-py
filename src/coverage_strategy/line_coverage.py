@@ -43,19 +43,13 @@ class LineExecutionResult(ExecutionResult):
         total_len = len(self.total_lines)
         return val / total_len if total_len > 0 else 0.0
 
-    def merge_one(self, other: "LineExecutionResult") -> "LineExecutionResult":
+    def merge_one(self, other: LineExecutionResult) -> LineExecutionResult:
         """Merge this execution result with another one."""
         if self.total_lines != other.total_lines:
             raise ValueError("cannot merge ExecutionResults with different total lines")
         merged_missing = list(set(self.missing_lines).intersection(set(other.missing_lines)))
         return LineExecutionResult(self.total_lines, merged_missing)
         
-    def merge_all(self, others: list["LineExecutionResult"]) -> "LineExecutionResult":
-        """Merge this execution result with multiple others."""
-        result = self
-        for other in others:
-            result = result.merge_one(other)
-        return result
     
     def __repr__(self) -> str:
         return f"<LineExecutionResult covered={self.fraction_covered():.2%} total={len(self.total_lines)} missing={len(self.missing_lines)}>"

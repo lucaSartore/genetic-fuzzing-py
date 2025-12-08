@@ -43,12 +43,6 @@ class BranchExecutionResult(ExecutionResult):
         merged_branches = list(set(self.taken_branches).union(set(other.taken_branches)))
         return BranchExecutionResult(merged_branches, self.total_branches)
         
-    def merge_all(self, others: list["BranchExecutionResult"]) -> "BranchExecutionResult":
-        """Merge this execution result with multiple others."""
-        result = self
-        for other in others:
-            result = result.merge_one(other)
-        return result
     
     def __repr__(self) -> str:
         return f"<BranchExecutionResult covered={self.fraction_covered():.2%} total_branches={self.total_branches_count} taken={len(self.taken_branches)}>"

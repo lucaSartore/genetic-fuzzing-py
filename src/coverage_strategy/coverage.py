@@ -1,7 +1,8 @@
 from abc import ABC, abstractmethod
 from importlib.util import module_from_spec, spec_from_file_location
 from pathlib import Path
-from typing import Callable, TypeVar
+from typing import Callable, TypeVar, Self
+
 
 import coverage
 from dataset.functions_list import FunctionType
@@ -14,23 +15,30 @@ class ExecutionResult(ABC):
         pass
     
     @abstractmethod
-    def novelty(self, baseline: "ExecutionResult") -> float:
+    def novelty(self, baseline: Self) -> float:
         """Calculate novelty compared to baseline execution result."""
         pass
 
     @abstractmethod
-    def merge_one(self, other: "ExecutionResult") -> "ExecutionResult":
+    def merge_one(self, other: Self) -> Self:
         """Merge this execution result with another one."""
         pass
     
-    @staticmethod
-    def merge_list(results: list["ExecutionResult"]) -> "ExecutionResult":
+    @classmethod
+    def merge_list(cls, results: list[Self]) -> Self:
         """Merge a list of execution results into one."""
         assert len(results) != 0, "can't merge empty list"
         first = results[0]
         for result in results[1:]:
             first = first.merge_one(result)
         return first
+
+    def merge_all(self, others: list[Self]) -> Self:
+        """Merge this execution result with multiple others."""
+        result = self
+        for other in others:
+            result = result.merge_one(other)
+        return result
 
 
 # Type variable for ExecutionResult subclasses
