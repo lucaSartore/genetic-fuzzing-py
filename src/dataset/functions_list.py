@@ -1,11 +1,11 @@
 from typing import TypedDict
 
+
 class FunctionType(TypedDict):
     name: str
     description: str
 
 FUNCTIONS: list[FunctionType] = [
-    # String Manipulation & Parsing
     {
         "name": "roman_to_int",
         "description": "Converts a Roman numeral string (e.g., 'MCMXCIV') to an integer. (Complex validation rules).",
@@ -86,30 +86,17 @@ FUNCTIONS: list[FunctionType] = [
         "name": "zigzag_conversion",
         "description": "Converts a string into a zigzag pattern and reads it line by line.",
     },
-    # Data Structures & Collections
     {
         "name": "merge_k_sorted_lists",
         "description": "Merges 'k' sorted lists into one sorted list. (Can be simulated with lists, good for 'heapq').",
-    },
-    {
-        "name": "serialize_binary_tree",
-        "description": "Serializes a (simulated) binary tree to a string. (Nodes can be dicts or simple objects).",
     },
     {
         "name": "deserialize_binary_tree",
         "description": "Deserializes a string back into a (simulated) binary tree.",
     },
     {
-        "name": "lru_cache_simulator",
-        "description": "Simulates an LRU cache's 'get' and 'put' operations. (Uses 'collections.OrderedDict').",
-    },
-    {
         "name": "max_sliding_window",
         "description": "Finds the maximum of each sliding window of size 'k'. (Uses 'collections.deque').",
-    },
-    {
-        "name": "get_top_k_frequent_elements",
-        "description": "Returns the 'k' most frequent elements from a list. (Uses 'collections.Counter' and 'heapq').",
     },
     {
         "name": "trie_insert_and_search",
@@ -128,10 +115,6 @@ FUNCTIONS: list[FunctionType] = [
         "description": "Simulates a stack using only two queues (e.g., 'collections.deque').",
     },
     {
-        "name": "find_median_from_data_stream_simulator",
-        "description": "Simulates adding numbers and finding the median. (Uses two heaps via 'heapq').",
-    },
-    {
         "name": "merge_intervals",
         "description": "Merges a list of overlapping intervals '[[1,3],[2,6],[8,10]]'.",
     },
@@ -147,7 +130,6 @@ FUNCTIONS: list[FunctionType] = [
         "name": "word_ladder",
         "description": "Finds the shortest transformation sequence from 'begin_word' to 'end_word'. (BFS).",
     },
-    # Algorithms (DP, Graphs, Search)
     {
         "name": "three_sum",
         "description": "Finds all unique triplets in a list that sum to zero.",
@@ -175,14 +157,6 @@ FUNCTIONS: list[FunctionType] = [
     {
         "name": "combination_sum",
         "description": "Finds all unique combinations from 'candidates' that sum to 'target'. (Backtracking).",
-    },
-    {
-        "name": "permutations",
-        "description": "Generates all possible permutations of a list.",
-    },
-    {
-        "name": "rotate_image",
-        "description": "Rotates an N_N matrix 90 degrees in place.",
     },
     {
         "name": "spiral_matrix",
@@ -237,15 +211,6 @@ FUNCTIONS: list[FunctionType] = [
         "description": "Finds all distinct solutions to the N-Queens puzzle. (Backtracking).",
     },
     {"name": "sudoku_solver", "description": "Solves a Sudoku puzzle. (Backtracking)."},
-    {
-        "name": "is_bipartite",
-        "description": "Checks if a graph (as an adjacency list) is bipartite.",
-    },
-    {
-        "name": "dijkstra_shortest_path",
-        "description": "Finds the shortest path in a weighted graph (as a dict of dicts).",
-    },
-    # Mathematical & Numerical
     {
         "name": "is_prime",
         "description": "Checks if an integer 'n' is a prime number. (Edge cases: 0, 1, negatives, large numbers).",
@@ -306,8 +271,6 @@ FUNCTIONS: list[FunctionType] = [
         "name": "plus_one",
         "description": "Adds one to a large integer represented as a list of digits.",
     },
-    # Standard Library Module Interactions
-    # re (Regular Expressions)
     {
         "name": "validate_email_complex_re",
         "description": "Validates an email using a complex (but not perfect) regex.",
@@ -328,33 +291,14 @@ FUNCTIONS: list[FunctionType] = [
         "name": "split_by_multiple_delimiters",
         "description": "Splits a string by a list of delimiters using 're.split'.",
     },
-    # json
-    {
-        "name": "parse_and_validate_json_schema",
-        "description": "Parses a JSON string and validates its structure against a simple schema (dict).",
-    },
-    {
-        "name": "find_nested_key_in_json",
-        "description": "Parses JSON and recursively searches for all values of a specific key.",
-    },
-    {
-        "name": "json_custom_serializer",
-        "description": "Serializes a complex object (e.g., containing 'datetime' or 'set') to a JSON string.",
-    },
-    # xml.etree.ElementTree
     {
         "name": "parse_xml_and_find_elements",
         "description": "Parses an XML string and finds all elements with a given tag.",
     },
     {
-        "name": "build_xml_from_dict",
-        "description": "Converts a nested dictionary into an XML string.",
-    },
-    {
         "name": "xpath_search_xml",
         "description": "Parses XML and performs a simple XPath search.",
     },
-    # datetime
     {
         "name": "parse_ambiguous_datetime",
         "description": "Tries to parse a datetime string that could be in one of several formats.",
@@ -367,7 +311,6 @@ FUNCTIONS: list[FunctionType] = [
         "name": "convert_timezone_from_str",
         "description": "Parses a datetime and converts it between timezone strings (e.g., 'UTC' to 'America/New_York').",
     },
-    # urllib.parse
     {
         "name": "parse_url_and_extract_params",
         "description": "Uses 'urlparse' and 'parse_qs' to extract query parameters from a URL.",
@@ -377,19 +320,9 @@ FUNCTIONS: list[FunctionType] = [
         "description": "Cleans up a URL (removes '..', default ports, fragments).",
     },
     {
-        "name": "build_url_with_params",
-        "description": "Uses 'urlencode' to build a full URL with query parameters.",
-    },
-    # base64 & hashlib
-    {
         "name": "safe_base64_decode",
         "description": "Decodes a base64 string, handling padding errors and invalid characters.",
     },
-    {
-        "name": ".calculate_checksum",
-        "description": "Calculates a hash (e.g., 'md5', 'sha256') for input data (bytes) using 'hashlib'.",
-    },
-    # Other Standard Libraries
     {
         "name": "generate_text_diff",
         "description": "Generates a unified diff between two strings using 'difflib'.",
@@ -411,126 +344,11 @@ FUNCTIONS: list[FunctionType] = [
         "description": "Uses the 'calendar' module to generate an HTML calendar for a given month and year.",
     },
     {
-        "name": "itertools_grouped_permutations",
-        "description": "Generates 'r'-length permutations of 'items' and groups them by their first element using 'itertools'.",
-    },
-
-
-    #### more complex functions ####
-    {
-        "name": "merge_nested_dicts",
-        "description": "Recursively merges multiple dictionaries with nested structures, handling conflicts via a strategy enum (overwrite/merge/keep).",
-    },
-    {
-        "name": "flatten_heterogeneous_list",
-        "description": "Flattens nested lists of mixed types (lists, tuples, sets) up to a specified depth with type preservation options.",
-    },
-    {
-        "name": "transpose_jagged_matrix",
-        "description": "Transposes a list of lists with varying lengths, with padding strategies (None/repeat/truncate).",
-    },
-    {
-        "name": "group_by_composite_key",
-        "description": "Groups list of dicts by multiple keys, with aggregation functions (sum/mean/concat) for value lists.",
-    },
-    {
-        "name": "deduplicate_nested_structures",
-        "description": "Removes duplicates from nested collections using custom equality functions and preservation strategies.",
-    },
-    {
-        "name": "parse_structured_log",
-        "description": "Parses multi-format log entries (JSON/key-value/delimited) with field extraction rules and error handling modes.",
-    },
-    {
         "name": "tokenize_with_context",
         "description": "Tokenizes text with context-aware rules (nested delimiters, escape sequences, quote handling).",
-    },
-    {
-        "name": "fuzzy_multi_pattern_match",
-        "description": "Matches multiple patterns with edit distance thresholds and priority rules for overlapping matches.",
-    },
-    {
-        "name": "interpolate_template",
-        "description": "Renders templates with nested variable substitution, filters, and conditional blocks.",
     },
     {
         "name": "normalize_unicode_variants",
         "description": "Normalizes text handling multiple unicode forms, homoglyphs, and bidirectional text.",
     },
-    {
-        "name": "validate_json_schema",
-        "description": "Validates nested JSON against schema with custom validators, type coercion options, and error collection modes.",
-    },
-    {
-        "name": "parse_cron_expression",
-        "description": "Parses cron expressions with extended syntax (ranges, lists, steps) returning next N execution times.",
-    },
-    {
-        "name": "validate_nested_config",
-        "description": "Validates hierarchical config dicts with type checking, required fields, mutual exclusions, and dependency rules.",
-    },
-    {
-        "name": "parse_query_dsl",
-        "description": "Parses domain-specific query language with operators (AND/OR/NOT), nested conditions, and field validators.",
-    },
-    {
-        "name": "sanitize_nested_input",
-        "description": "Recursively sanitizes user input with per-field rules (strip/escape/validate) and allowlist/blocklist patterns.",
-    },
-    {
-        "name": "find_paths_in_dag",
-        "description": "Finds all paths between nodes in directed acyclic graph (adjacency list) with constraint predicates.",
-    },
-    {
-        "name": "balance_tree_structure",
-        "description": "Rebalances tree (nested dicts) according to strategies (AVL/red-black/weight) with rotation tracking.",
-    },
-    {
-        "name": "detect_cycles_with_metadata",
-        "description": "Detects cycles in graph with edge types, returning cycle paths with metadata aggregation.",
-    },
-    {
-        "name": "compute_tree_diff",
-        "description": "Computes structural diff between trees with operation types (add/remove/modify) and similarity metrics.",
-    },
-    {
-        "name": "merge_hierarchical_permissions",
-        "description": "Merges permission trees with inheritance rules, overrides, and conflict resolution strategies.",
-    },
-    {
-        "name": "aggregate_time_series",
-        "description": "Aggregates time-series data (list of tuples) with multiple window types (sliding/tumbling/session) and functions.",
-    },
-    {
-        "name": "interpolate_sparse_matrix",
-        "description": "Interpolates missing values in sparse matrix (dict of coordinates) using multiple strategies.",
-    },
-    {
-        "name": "compute_rolling_statistics",
-        "description": "Computes rolling statistics over windows with multiple metrics and outlier handling modes.",
-    },
-    {
-        "name": "bin_multidimensional_data",
-        "description": "Bins data points into multi-dimensional buckets with adaptive/fixed strategies and edge handling.",
-    },
-    {
-        "name": "normalize_heterogeneous_metrics",
-        "description": "Normalizes lists of metrics with different scales using per-metric strategies (z-score/min-max/robust).",
-    },
-    {
-        "name": "execute_state_machine",
-        "description": "Executes state machine with transitions (dict of state->list of conditions), event queue, and guard functions.",
-    },
-    {
-        "name": "resolve_dependency_graph",
-        "description": "Resolves execution order from dependency DAG with parallel groups and circular dependency detection.",
-    },
-    {
-        "name": "apply_transformation_pipeline",
-        "description": "Applies transformation pipeline (list of functions) with conditional routing, error recovery modes, and state passing.",
-    },
-    {
-        "name": "schedule_task_dag",
-        "description": "Schedules tasks with dependencies, resource constraints, priorities, and multiple scheduling strategies.",
-    }
 ]
