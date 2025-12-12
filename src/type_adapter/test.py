@@ -2,7 +2,7 @@ from type_adapter.args_dispatcher import ArgsDispatcher
 from random import Random
 
 
-def fn(a: int, b: bool, c: list[int], d: list[bool], e: list[list[int]]):
+def fn(a: int, b: bool, c: list[int], d: list[bool], e: list[dict[int, bool]]):
     print('############ ARGS ##############')
     print(a,b,c,d,e)
 
