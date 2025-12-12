@@ -10,11 +10,21 @@ from inspyred import ec
 from util.mutable_probability import MutableProbability
 
 
+# in parity in term of execution time with novelty search
+# @dataclass
+# class InputBagSettings(SettingsBaseClass):
+#     num_inputs: int = 100
+#     num_individuals: int = 50
+#     num_generations: int = 800
+#     num_selected: int = 10
+
+
+# in parity in term of number of function calls with novelty search
 @dataclass
 class InputBagSettings(SettingsBaseClass):
-    num_inputs: int = 100
-    num_individuals: int = 50
-    num_generations: int = 500
+    num_inputs: int = 20
+    num_individuals: int = 20
+    num_generations: int = 25
     num_selected: int = 10
 
 class Individual:
@@ -22,9 +32,12 @@ class Individual:
         self.args_dispatchers = args_dispatchers
         self.mutation_probability = mutation_probability
 
-    def evaluate(self, tester: CoverageTester):
+    def get_test_result(self, tester: CoverageTester):
         args = [d.get_args() for d in self.args_dispatchers]
-        result = tester.run_test(args)
+        return tester.run_test(args)
+
+    def evaluate(self, tester: CoverageTester):
+        result = self.get_test_result(tester)
         return result.fraction_covered()
 
     def mutate(self, random: Random):
@@ -67,11 +80,12 @@ class InputBag(Strategy[InputBagSettings]):
             return [ c.evaluate(self.tester) for c in candidates]
 
         def mutate_operator(random: Random, candidates: list[Individual], args):
-            for i,candidate in enumerate(candidates):
+            for i,_ in enumerate(candidates):
                 if new_individual_probability.event(random):
                     candidates[i] = generate_individual(random, args)
-                else:
-                    candidate.mutate(random)
+                candidates[i].mutate(random)
+                while random.random() > 0.5:
+                    candidates[i].mutate(random)
             return candidates
 
         # def crossover_operator(random, parents: list[Tuple[Individual, Individual]], args):

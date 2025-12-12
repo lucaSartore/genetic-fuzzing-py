@@ -14,8 +14,11 @@ from util.mutable_probability import MutableProbability
 
 @dataclass
 class NovelSearchSettings(SettingsBaseClass):
+    # number of individuals to start the population with
     num_individuals: int = 1
-    num_generations: int = 5000
+    # number of generations
+    num_generations: int = 5_000
+    # number of new offspring to generate at each generation
     num_selected: int = 1
 
 
@@ -44,11 +47,13 @@ class NovelSearch(Strategy[NovelSearchSettings]):
             return to_return
 
         def mutate_operator(random: Random, candidates: list[ArgsDispatcher], args):
-            for i,candidate in enumerate(candidates):
+            for i, _ in enumerate(candidates):
                 if new_individual_probability.event(random):
                     candidates[i] = generate_individual(random, args)
-                else:
-                    candidate.mutate(random)
+
+                candidates[i].mutate(random)
+                while random.random() > 0.5:
+                    candidates[i].mutate(random)
             return candidates
 
 
