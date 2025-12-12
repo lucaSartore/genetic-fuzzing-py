@@ -20,6 +20,7 @@ class TypeAdapterCollection:
         from type_adapter.type_adapter_implementations.float_adapters import FloatAdapter
         from type_adapter.type_adapter_implementations.list_adapter import ListAdapter
         from type_adapter.type_adapter_implementations.str_adapter import StrAdapter
+        from type_adapter.type_adapter_implementations.dict_adapter import DictAdapter
         
 
         if use_default_adapters_list:
@@ -28,7 +29,8 @@ class TypeAdapterCollection:
                 IntAdapter,
                 FloatAdapter,
                 BoolAdapter,
-                StrAdapter
+                StrAdapter,
+                DictAdapter
             ]
         else:
             self.adapters = []
