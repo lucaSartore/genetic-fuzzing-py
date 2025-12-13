@@ -40,7 +40,7 @@ def main():
         case ("novelty_search", _):
             settings = NovelSearchSettings(
                 num_individuals= 1,
-                num_generations= 5_000,
+                num_generations= 10_000,
                 num_selected= 1
             )
 
@@ -65,7 +65,7 @@ def main():
             )
         case ("random", "function_call"):
             settings = RandomStrategySettings(
-                num_generations= 10,
+                num_generations= 20,
                 num_individuals= 500
             )
     if coverage == "branch":
