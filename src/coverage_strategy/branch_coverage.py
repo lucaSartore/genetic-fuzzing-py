@@ -110,6 +110,10 @@ class BranchCoverageTester(CoverageTester):
                 continue
             if fr < 0 or to < 0:
                 continue
+            #check if fr is in total branches
+            if (fr, 2) not in total_branches:
+                continue
+
             branches_taken.append((fr, to))
         
         return BranchExecutionResult(branches_taken, total_branches)
