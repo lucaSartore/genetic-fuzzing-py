@@ -5,13 +5,19 @@ import os
 import shutil
 import pathlib
 from itertools import product
-from typing import get_args, cast
+from typing import Literal, get_args, cast
 
 from concurrent.futures import ProcessPoolExecutor, as_completed
 
 from strategy.strategy import StrategyEnum
 
 MAX_WORKERS = 20  # Set your desired maximum number of parallel processes
+
+# coverage strategy to use
+COVERAGE: Literal["branch","line"] = "branch"
+
+# whether to evaluate 3 strategy with time-parity or with number of function call parity
+PARITY: Literal["function_call", "time"] = "function_call"
 
 def main():
     results = []
@@ -20,7 +26,7 @@ def main():
             executor.submit(run_func, func["name"], strategy, True)
             for strategy, func in 
             # product(list[StrategyEnum](["random"]), FUNCTIONS[:2] ) # only random strategy for quick test
-            product(get_args(StrategyEnum), FUNCTIONS[:2] ) # all strategies for full tests
+            product(get_args(StrategyEnum), FUNCTIONS ) # all strategies for full tests
         ]
         for future in as_completed(futures):
             func_name, stdout, stderr, returncode = future.result()
@@ -62,7 +68,11 @@ def run_func(func: str, strategy: StrategyEnum, overwrite: bool = False):
             "--strategy",
             strategy,
             "--logdir",
-            log_dir
+            log_dir,
+            "--coverage",
+            COVERAGE,
+            "--parity",
+            PARITY
         ],
         capture_output=True, text=True, #preexec_fn=set_limits
     )

@@ -20,7 +20,7 @@ from strategy.input_bag_strategy.input_bag import Individual
 # @dataclass
 class RandomStrategySettings(SettingsBaseClass):
     num_generations: int = 10
-    num_individuals = 500
+    num_individuals: int = 500
 
 class RandomStrategy(Strategy[RandomStrategySettings]):
     @classmethod
