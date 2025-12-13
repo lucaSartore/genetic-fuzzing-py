@@ -351,4 +351,28 @@ FUNCTIONS: list[FunctionType] = [
         "name": "normalize_unicode_variants",
         "description": "Normalizes text handling multiple unicode forms, homoglyphs, and bidirectional text.",
     },
+    {
+        "name": "is_odd_for_dummys",
+        "description": "Is odd implemented with cascade if statements",
+    },
+    {
+        "name": "count_bool10",
+        "description": "count bool cascade function",
+    },
+    {
+        "name": "count_bool20",
+        "description": "count bool cascade function",
+    },
+    {
+        "name": "count_bool30",
+        "description": "count bool cascade function",
+    },
+    {
+        "name": "count_bool40",
+        "description": "count bool cascade function",
+    },
+    {
+        "name": "count_bool50",
+        "description": "count bool cascade function",
+    },
 ]
