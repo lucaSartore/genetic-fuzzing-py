@@ -3,6 +3,8 @@ import numpy as np
 import seaborn as sns
 import pandas as pd
 import matplotlib.pyplot as plt
+import glob
+import shutil
 
 # Set a professional style for the plots
 sns.set_theme(style="whitegrid")
@@ -10,6 +12,8 @@ sns.set_theme(style="whitegrid")
 def generate_graphs(results_dir: str = "../results"):
     single_test_analytics(results_dir)
     test_average_analytics(results_dir)
+    move_charts(results_dir)
+
 
 def test_average_analytics(results_dir: str):
     strategies_data = {}
@@ -133,6 +137,46 @@ def single_test_analytics(results_dir: str):
         plt.title(f"Final Coverage for {testcase}", fontsize=16)
         plt.savefig(os.path.join(testcase_path, "final.png"), dpi=300)
         plt.close()
+
+def move_charts(
+    root_dir: str, 
+):
+    filenames = ['final.png', 'progressive.png']
+
+    target_dir= os.path.join(root_dir, 'all')
+
+    os.makedirs(target_dir, exist_ok=True)
+    print(f"Target directory '{target_dir}' is ready.")
+
+    for filename in filenames:
+        print(f"\n--- Processing: {filename} ---")
+        
+        # Build the glob pattern: 
+        # root_dir/*/<filename> matches any file inside any immediate subdirectory of root_dir
+        pattern = os.path.join(root_dir, '*', filename)
+        
+        # glob.iglob is memory efficient for large numbers of files
+        for src_path in glob.iglob(pattern):
+            # src_path will look like 'path/to/root/ProjectA/final.png'
+
+            # 3. Extract the <NAME> part (e.g., 'ProjectA')
+            # Get the directory of the file: 'path/to/root/ProjectA'
+            name_dir = os.path.dirname(src_path)
+            # Get the last part of the path (the <NAME> folder): 'ProjectA'
+            name = os.path.basename(name_dir)
+
+            # 4. Define the new destination path
+            # New filename format: <NAME>_<filename> (e.g., ProjectA_final.png)
+            new_filename = f"{name}_{filename}"
+            # Full destination path: target_dir/ProjectA_final.png
+            dest_path = os.path.join(target_dir, new_filename)
+
+            try:
+                # 5. Copy the file
+                shutil.copy2(src_path, dest_path)
+                print(f"Copied: {src_path} -> {dest_path}")
+            except Exception as e:
+                print(f"ERROR copying {src_path}: {e}")
 
 if __name__ == "__main__":
     generate_graphs()
