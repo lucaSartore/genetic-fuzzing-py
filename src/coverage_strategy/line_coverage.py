@@ -1,6 +1,8 @@
 from typing import Callable
 import coverage
 
+from coverage_strategy.hashable_result_container import HashableResultContainer
+
 from .coverage import ExecutionResult, CoverageTester
 from dataset.functions_list import FunctionType
 
@@ -8,9 +10,19 @@ from dataset.functions_list import FunctionType
 class LineExecutionResult(ExecutionResult):
     """Execution result implementation for line coverage."""
 
-    def __init__(self, total_lines: list[int], missing_lines: list[int]):
+    def __init__(
+        self,
+        total_lines: list[int],
+        missing_lines: list[int],
+        path_hashes: set[HashableResultContainer[int]] | None = None
+    ):
         self.total_lines = total_lines
         self.missing_lines = missing_lines
+        if path_hashes != None:
+            self.path_hashes = path_hashes
+        else:
+            self.path_hashes = set([HashableResultContainer(total_lines, missing_lines)])
+
 
     @property
     def executed_lines(self) -> set[int]:
@@ -24,10 +36,10 @@ class LineExecutionResult(ExecutionResult):
     
     def novelty(self, baseline: "LineExecutionResult") -> float:
         """Calculate novelty compared to baseline execution result."""
-        novel_lines = self.executed_lines - baseline.executed_lines
-        total_len = len(self.total_lines)
-        val = len(novel_lines)
-        return val / total_len if total_len > 0 else 0.0
+        for path in self.path_hashes:
+            if path not in baseline.path_hashes:
+                return 1
+        return 0
     
     def similar_executed_or_ignored(self, other: "LineExecutionResult") -> float:
         """Measure the inverse of the difference of the two executions, normalized by total lines."""
@@ -47,8 +59,9 @@ class LineExecutionResult(ExecutionResult):
         """Merge this execution result with another one."""
         if self.total_lines != other.total_lines:
             raise ValueError("cannot merge ExecutionResults with different total lines")
+        path_hashes = self.path_hashes.union(other.path_hashes)
         merged_missing = list(set(self.missing_lines).intersection(set(other.missing_lines)))
-        return LineExecutionResult(self.total_lines, merged_missing)
+        return LineExecutionResult(self.total_lines, merged_missing, path_hashes)
         
     
     def __repr__(self) -> str:

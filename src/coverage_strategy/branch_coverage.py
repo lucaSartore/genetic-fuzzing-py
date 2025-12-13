@@ -3,16 +3,27 @@ from typing import Callable
 import coverage
 
 from .coverage import ExecutionResult, CoverageTester
+from .hashable_result_container import HashableResultContainer
 from dataset.functions_list import FunctionType
 
 
 class BranchExecutionResult(ExecutionResult):
     """Execution result implementation for branch coverage."""
 
-    def __init__(self, taken_branches: list[tuple[int, int]], total_branches: list[tuple[int, int]]):
+    def __init__(
+        self,
+        taken_branches: list[tuple[int, int]],
+        total_branches: list[tuple[int, int]],
+        path_hashes: set[HashableResultContainer[tuple[int, int]]] | None = None 
+    ):
         self.taken_branches = taken_branches
         self.total_branches = total_branches
         self.total_branches_count = sum([count for (_, count) in total_branches])
+        if path_hashes != None:
+            self.path_hashes = path_hashes
+        else:
+            self.path_hashes = set([HashableResultContainer(taken_branches, total_branches)])
+
         
     def fraction_covered(self) -> float:
         """Return the fraction of branches covered."""
@@ -21,8 +32,10 @@ class BranchExecutionResult(ExecutionResult):
     
     def novelty(self, baseline: "BranchExecutionResult") -> float:
         """Calculate novelty compared to baseline execution result."""
-        novel_branches = set(self.taken_branches) - set(baseline.taken_branches)
-        return len(novel_branches) / self.total_branches_count if self.total_branches_count > 0 else 0.0
+        for path in self.path_hashes:
+            if path not in baseline.path_hashes:
+                return 1
+        return 0
     
     def similar_executed_or_ignored(self, other: "BranchExecutionResult") -> float:
         """Measure the inverse of the difference of the two executions, normalized by total branches."""
@@ -40,8 +53,9 @@ class BranchExecutionResult(ExecutionResult):
         """Merge this execution result with another one."""
         if self.total_branches != other.total_branches:
             raise ValueError("cannot merge ExecutionResults with different total branches")
+        path_hashes = self.path_hashes.union(other.path_hashes)
         merged_branches = list(set(self.taken_branches).union(set(other.taken_branches)))
-        return BranchExecutionResult(merged_branches, self.total_branches)
+        return BranchExecutionResult(merged_branches, self.total_branches, path_hashes)
         
     
     def __repr__(self) -> str:
