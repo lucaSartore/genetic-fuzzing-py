@@ -2,3 +2,10 @@
 __pycache__/
 src/results/
 
+*.aux
+*.fls
+*.log
+*.out
+*.gz
+*.toc
+*.fdb_latexmk
