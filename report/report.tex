@@ -83,12 +83,12 @@ Nevertheless, we have selected several key works to highlight diverse methodolog
 The general architecture of our system can be seen in figure \ref{fig:overview}.
 The idea is to start from a function we want to test, and use the type annotations
 to understand the input that the function takes. With this input we can use a ``type adapter''
-(an interface that implements crossover and mutations oparations on top of existing python types)
+(an interface that implements crossover and mutation operations on top of existing Python types)
 to generate a valid input to the function.
 
 We can then execute the input, and measure the coverage. This information can then be used by
 a ``strategy'' to mutate the input, and try to improve the coverage.
-The main strategy we used is Novelty Search, but we also tested other as baselines.
+The main strategy we used is Novelty Search, but we also tested others as baselines.
 
 \begin{figure}[H]
 \centering
@@ -116,8 +116,8 @@ This information is used to select what kind of type adapter
 
 \subsection{Type Adapters}
 Type adapters are an abstraction that implements genetic operators
-(namely crossover and mutations) on top of existing python types
-(such as \textit{int}, \textit{bool}, \textit{list} ecc.).
+(namely crossover and mutation) on top of existing Python types
+(such as \textit{int}, \textit{bool}, \textit{list} etc.).
 We implemented type adapters on top of the basic python types,
 and we defined an API to ``inject'' new adapters in the system
 (so that users of our library can use this feature to fuzz-test
@@ -125,25 +125,25 @@ with custom types).
 
 Our implementation of the type adapters is recursive, meaning
 that when we define the adapter for \textit{list} we automatically
-get the adapters for all the specialyzed thpes such as \textit{list[int]},
-\textit{list[bool]}, \textit{list[list[float]]} ecc.
+get the adapters for all the specialized types such as \textit{list[int]},
+	extit{list[bool]}, \textit{list[list[float]]} etc.
 
 \label{sec:type_adapter}
 
 \subsection{Dataset}
-We tried to use some existing dataset, but unfortunatly
-none of the one we found were adeguate for our project.
+We tried to use some existing datasets, but unfortunately
+none of the ones we found were adequate for our project.
 In particular we needed a dataset with type annotations,
-and we couldn't find one. So we generated one using 
-Google Gemini APIs. The dataset has approximatly 100 
-function and is fully open source.
+and we couldn't find one. So we generated one using
+Google Gemini APIs. The dataset has approximately 100
+functions and is fully open source.
 
 \subsection{Test Cases}
 
 For a complete overview of novelty search's performance
-we created two other tequniques to compare against,
-one dosn't use any particular logic (Random) and another
-one is a traditional Genetic Algoritm implementation (Input Bag)
+we created two other techniques to compare against:
+one that doesn't use any particular logic (Random) and another
+that is a traditional Genetic Algorithm implementation (Input Bag).
 
 \subsubsection{Random}
 This strategy simply generate random inputs and throw them at the
@@ -152,30 +152,30 @@ functions in order to measure the coverage.
 \subsubsection{Input Bag}
 Input Bag is our implementation of a traditional genetic algorithm.
 
-Applying GAs to fuzzing has a foundamental problem: We need to 
-evoleve a set of inputs (not just one input) if we want to
+Applying genetic algorithms to fuzzing has a fundamental problem: we need to
+evolve a set of inputs (not just one input) if we want to
 cover the entire function.
 To do so we had two options:
 \begin{itemize}
     \item \textbf{Bundling up multiple inputs in one individual}
-    This idea is imple, we define a constant N that define how many
-    function inputs one idividual si made of, and then we evolve
-    the best N inputs that when evaluated together maximise coverage.
+    This idea is simple: we define a constant N that defines how many
+    function inputs one individual is made of, and then we evolve
+    the best N inputs that, when evaluated together, maximize coverage.
     \item \textbf{Using fitness sharing to encourage diversity}
-    We can make each individual represent one singlie function input,
-    and then we can use fitness sharing (or other similar
-    techniques) to encouraje individual diversity.
+    We can make each individual represent one single function input,
+    and then use fitness sharing (or other similar
+    techniques) to encourage individual diversity.
     In this way the entire population will become our final
-    output (not only the fittest individual)
+    output (not only the fittest individual).
 \end{itemize}
 
-both teqniques were valid, we decided to use the first one for
-our work. We tested various selection replacement strategy, 
-and we found that by far the most important thing was to
+Both techniques were valid; we decided to use the first one for
+our work. We tested various selection/replacement strategies,
+and we found that, by far, the most important aspect was to
 use elitism (which makes sense given the highly non-linear
 nature of the problem).
-We also found that adding steady state replacement
-to introduce novel genetic material helpd a bit.
+We also found that adding steady-state replacement
+to introduce novel genetic material helped a bit.
 
 
 \iffalse
@@ -205,8 +205,8 @@ new genetic material is constantly intriduced.
 
 \subsubsection{Novelty Search}
 Our implementation of novelty search is pretty standard (it keeps a list
-of all the ``novel'' individuals, and it then uses them to generate newer one).
-What is not straightforward is the way we define ``Novelty''.
+of all the ``novel'' individuals, and then uses them to generate newer ones).
+What is not straightforward is the way we define ``Novelty.''
 The general idea is to generate an hash-able summary of the parts of the code
 hit by a certain input, so that we can understand if one specific input is
 ``novel'' with a simple hash-map (making this an $O(1)$ time operation).
@@ -215,7 +215,7 @@ all the lines that are executed.
 An input is considered ``novel'' if and only if the set of lines executed
 is different from all the others.
 This means that we could end up selecting individuals that cover
-less code then the one we already have, assuming that
+less code than the ones we already have, assuming that
 they are doing something different.
 This behaviour is desired, as there are cases where reducing
 coverage can lead to exploring new paths, for example:
@@ -223,7 +223,7 @@ coverage can lead to exploring new paths, for example:
 \begin{lstlisting}
 A = True
 # not executing this if can increase
-# coverage if C2 == Ture
+# coverage if C2 == True
 if C1:
     A = False
 if A and C2:
@@ -236,28 +236,28 @@ if A and C2:
 
 \subsection{Setup}
 \label{sec:setup}
-In our test we evaluated the performances of the three stretegies using the entire
-dataset. We ran two different test senarios:
+In our tests we evaluated the performance of the three strategies using the entire
+dataset. We ran two different test scenarios:
 \begin{itemize}
-    \item \textbf{Function call parity:} in this senario each strategy gets
-    a limited ammount of call to the tested function, and we see which strategy
-    worsk better with this constraint
-    \item \textbf{Execution time parity:} in this senario we give each straetegy
-    a fixed execution time, and we allow them to work untill the clock run out.
+    \item \textbf{Function call parity:} in this scenario each strategy gets
+    a limited amount of calls to the tested function, and we see which strategy
+    works better with this constraint.
+    \item \textbf{Execution time parity:} in this scenario we give each strategy
+    a fixed execution time, and we allow them to work until the clock runs out.
 \end{itemize}
 
-In the table below (\ref{tab:strat}) we can see how, when using the ``fixed execution time'' strategy
-novelty search is able to call the test function 400 times less with respect two
-the other two strategies, which puts it at a significant disadvantage.
+In the table below (\ref{tab:strat}) we can see that when using the ``fixed execution time'' setting,
+Novelty Search calls the test function about 400 times fewer than the other two strategies,
+which puts it at a significant disadvantage.
 
-The reason of this behaveour is that coverage.py has a significant overhed associated with starting
-a test. With \textit{Random} and \textit{Input Bag} we are able to admortize this cost by bundling
-up multiple function call into a single run, however it is not possible to do the same 
+The reason for this behavior is that coverage.py has a significant overhead associated with starting
+a test. With \textit{Random} and \textit{Input Bag} we are able to amortize this cost by bundling
+multiple function calls into a single run; however, it is not possible to do the same
 using \textit{Novelty Search}.
 
-Given that this is more of a limitation associated with coverage.py that something 
-caused by \textit{Novelty Search} we decided to consider ``Function call parity'' for our
-final results, given that doing otherwise would make \textit{Novelty Search} useless
+Given that this is more a limitation associated with coverage.py than something caused by \textit{Novelty Search},
+we decided to consider ``Function call parity'' for our final results, because otherwise \textit{Novelty Search}
+would be unfairly disadvantaged.
 
 \begin{table}[h!]
 \label{tab:strat}
@@ -276,11 +276,12 @@ final results, given that doing otherwise would make \textit{Novelty Search} use
 
 \subsection{General Trend}
 
-In the plot \ref{fig:general_trend}, we can see that random search, and input bag performs in a similar way, with random gives consistently more coverage than input bag. This is probably caused by a more aggressive exploration in the random search approach, as well as the fact that input bag has a constraint in the number of inputs inputs that it can use. 
-%Novelty search as a smaller coverage in the first iterations, and this is because it starts from exactly one output in the first iteration (while the other two start from a bundle), and then it adds additional outputs. As the number of outputs increases, it catches on with random search, and in the end it outperforms it.
+In the plot \ref{fig:general_trend}, we can see that Random Search and Input Bag perform similarly, with Random
+giving consistently more coverage than Input Bag. This is likely caused by more aggressive exploration in the
+Random Search approach, as well as the fact that Input Bag is constrained in the number of inputs it can use.
 
-Novelty search outperforms both strategies in the end. We should note that the reason why novelty search is really
-lagging behind in the beginning is that the first iteration of the other two strategies has already run many more
+Novelty Search outperforms both strategies in the end. We should note that the reason why Novelty Search lags
+behind in the beginning is that the first iteration of the other two strategies has already executed many more
 function calls due to the inputs being bundled.
 
 \begin{figure}[H]
@@ -290,7 +291,7 @@ function calls due to the inputs being bundled.
 \label{fig:general_trend}
 \end{figure}
 
-We had approximatly 400 similar charts (for each individual function, and for both function call parity and execution
+We had approximately 400 similar charts (for each individual function, and for both function call parity and execution
 time parity) that we can't include in the report for obvious reasons, but you can find them on \href{https://github.com/lucaSartore/genetic-fuzzing-py/tree/main/report/results}{github} if
 you are interested.
 
@@ -304,34 +305,34 @@ you are interested.
 \label{fig:combined_count_bool_is_odd}
 \end{figure}
 
-While testing the applications, we developed two pathological functions, in order to test the theoretical strengths for each implementation.
+While testing the applications, we developed two pathological functions to test the theoretical strengths of each implementation.
 \begin{itemize}
-    \item \textbf{count\_bool:} this function that takes a large amount of boolean inputs, and counts of many true values are present until the first false. We implemented it as a deep succession of if's. (code \href{https://github.com/lucaSartore/genetic-fuzzing-py/blob/main/src/dataset/output/count_bool20.py}{here}).
-    \item \textbf{is\_odd\_for\_dummies:} this function takes an integer in input, and it has a large succession of if's, and each if handles a particular integer, returning true if it is odd, false otherwise. (code \href{https://github.com/lucaSartore/genetic-fuzzing-py/blob/main/src/dataset/output/is_odd_for_dummys.py}{here}).
+    \item \textbf{count\_bool:} this function takes a large number of boolean inputs and counts how many true values are present until the first false. We implemented it as a deep succession of if statements (code \href{https://github.com/lucaSartore/genetic-fuzzing-py/blob/main/src/dataset/output/count_bool20.py}{here}).
+    \item \textbf{is\_odd\_for\_dummies:} this function takes an integer as input and has a long succession of if statements; each handles a particular integer, returning True if it is odd and False otherwise (code \href{https://github.com/lucaSartore/genetic-fuzzing-py/blob/main/src/dataset/output/is_odd_for_dummys.py}{here}).
 \end{itemize}
-The first function is very deep, in the sense that to score an high output, all the previous condition must evaluate to true, crafting an input that goes deep in to the function easier to do when done progressively (using evolution) instead of doing it one shot (using random input). We can see the results in plot~\ref{fig:combined_count_bool_is_odd}). Instead in the second case the function is very shallow, because to get a particular branch the algorithm must exactly generate a particular value, without any previous information to build it. This advantages exploration over exploitation, reducing the novelty search advantage~(as shown in plot~\ref{fig:combined_count_bool_is_odd}). 
+The first function is very deep: to score a high output, all previous conditions must evaluate to True. Crafting an input that goes deep into the function is easier when done progressively (using evolution) instead of in one shot (using random input). We can see the results in plot~\ref{fig:combined_count_bool_is_odd}. In the second case the function is very shallow, because to reach a particular branch the algorithm must generate an exact value, without any previous information to build it. This favors exploration over exploitation, reducing Novelty Search's advantage (as shown in plot~\ref{fig:combined_count_bool_is_odd}).
 
 
 
 
 
 \subsection{The implications of the No Free Lunch Theorem}
-In our settings, we decided to test some general arbitrary functions, and potentially each computable problem can be encoded in a function to test. Because of this, It is the perfect application for the No Free Lunch Theorem, which states that each optimization algorithm will perform on average the same on all the possible problems. This perfectly fits what we disclosed in the section \ref{sub:count_bool_vs_is_odd}..
+In our setup, we decided to test general arbitrary functions, since potentially each computable problem can be encoded in a function to test. Because of this, it is a fitting application for the No Free Lunch Theorem, which states that each optimization algorithm will perform on average the same over the space of all possible problems. This observation aligns with the discussion in section \ref{sub:count_bool_vs_is_odd}.
 
 \subsection{Limitations of Coverage.py}
 \label{sec:coverage_limitations}
 
-We would like note how the coverage.py framework did have some limitations
-that inpacted our results. The first one is the overhead associated with the
-test start that we discussed in section \ref{sec:setup}.
-However that has been addressed by seitching to ``function call parity'' as 
+We would like to note that the coverage.py framework had some limitations
+that impacted our results. The first is the overhead associated with
+starting a test, which we discussed in section \ref{sec:setup}.
+However, we addressed that by switching to ``function call parity'' as
 the evaluation method.
 
 The second limitation is perhaps harder to address. Coverage.py only measures
-line coverge and branch coverage, but there are other ways to measures this that
-could work better for our usecase.
-For example \href{https://github.com/jestjs/jest}{Jest} (javascript's testing framework) also measures \textit{Statement Coverage}
-that is more detailed and would result a stronger supervising signal.
+line coverage and branch coverage, but there are other ways to measure coverage that
+could work better for our use case.
+For example, \href{https://github.com/jestjs/jest}{Jest} (JavaScript's testing framework) also measures \textit{statement coverage},
+which is more detailed and can provide a stronger supervisory signal.
 For example, take the following code:
 
 \begin{lstlisting}
@@ -340,21 +341,20 @@ if C1 and C2:
 \end{lstlisting}
 
 In the example we want to make C1 and C2 both true at the same
-time if want to cover the line inside the if statement.
-Using line coverage a mutation that would make C1 true 
-would go unnoticed, as it would not effect the coverage in the
-immidiate term. If we where instead using statement coverage
-the mutation that make C1 true would immidiatly result
-in an higher coverage, and therefore an higher likelyhood that the
-individual is selected for future generations and would maybe be able
-to make C2 true in one of the following mutations.
+time to cover the line inside the if statement.
+Using line coverage, a mutation that makes C1 true
+would go unnoticed, as it would not affect coverage in the
+immediate term. If we were instead using statement coverage,
+the mutation that makes C1 true would immediately result
+in higher coverage, and therefore a higher likelihood that the
+individual is selected for future generations and may then make
+C2 true in a subsequent mutation.
 
-Another useful metric that coverage.py does not collect is the 
-amount of times that a certain line/branch is hit. Instead
-coverage.py only collect information on the fact that the
-line is executed or not. Ignoring any sort of counter.
-It is easy to see how this kind of information could be 
-usefull when testing code such as this one:
+Another useful metric that coverage.py does not collect is the
+number of times that a certain line or branch is hit. Instead,
+coverage.py only collects information on whether a line is executed or not,
+ignoring any sort of counter. It is easy to see how this kind of information could be
+useful when testing code such as the following:
 
 \begin{lstlisting}
 counter = 0
@@ -370,50 +370,50 @@ if counter > 3:
 
 
 \section{Conclusions and Future Work}
-In conclusion we can say that using novelty search for fuzzing looks promising.
+In conclusion, using Novelty Search for fuzzing looks promising.
 
-There are definitly some senareos where novelty search outperforms
-our random and input bag baseline with significant margins.
-However there are also senareos where novelty search is 
-outperfomed by even a simple random search.
+There are definitely some scenarios where Novelty Search outperforms
+our Random and Input Bag baselines by significant margins.
+However, there are also scenarios where Novelty Search is
+outperformed by even simple Random Search.
 
-A two main challenges that need to be addressed before the framework we 
-developed could become usefull in a production eivironment, 
-and they are both associated with coverage.py:
+Two main challenges need to be addressed before the framework we
+developed could become useful in a production environment, and both
+are associated with coverage.py:
 \begin{itemize}
-    \item \textbf{High overhead} As we explained in section \ref{sec:setup} due to
+    \item \textbf{High overhead:} As we explained in section \ref{sec:setup}, due to
     overheads associated with the initialization of coverage.py we had to use ``function call parity''
-    for all of our tests, however in a produciton enviromnent ``execution time parity'' is much more
-    alligned with how the costs of various CI-CD pipelines is calculated, and therefore should be
-    the main metric considered when evaluating the performances.
-    \item \textbf{Week supervising signal} As we alluded in section \ref{sec:coverage_limitations} coverage.py 
-    only have limited ways to measure coverage (namely line coverage and branch coverage) but more 
-    complex (and potentially more effective) methods exists, that could result in a supervising signal
-    that is stringer, and therefore can better guide our algorithm.
+    for all of our tests. However, in a production environment ``execution time parity'' is much more
+    aligned with how the costs of various CI/CD pipelines are calculated, and therefore should be
+    the main metric considered when evaluating performance.
+    \item \textbf{Weak supervisory signal:} As we alluded to in section \ref{sec:coverage_limitations}, coverage.py
+    only has limited ways to measure coverage (namely line and branch coverage). More
+    complex (and potentially more effective) methods exist that could provide a stronger supervisory signal
+    and therefore better guide our algorithm.
 \end{itemize}
 
-In future works we would like to address those limitations by either
-re-implementing coverage.py to address it's issues or more realistically
-by switching to a programming langage that already has a better testing
+In future work we would like to address those limitations either by
+re-implementing parts of coverage.py to address its issues or, more realistically,
+by switching to a programming language that already has a better testing
 framework implemented.
 
-It is also clear to us that givven the high generality of the concept of ``A function'' 
-and givven the implications of the No Free Launch theorem, it will be impossible 
-to have a single algorithm that can efficently fuzz-test any kind of fuction.
-To address this limitation it would be interesting to have test a ``Mixture Of Strategies''
-approach, were different strategies are executed in the same function, and over time
-only the one that acieve the best results are kept while the other are discarted.
+It is also clear to us that, given the high generality of the concept of ``a function''
+and given the implications of the No Free Lunch theorem, it will be impossible
+to have a single algorithm that can efficiently fuzz-test any kind of function.
+To address this limitation it would be interesting to test a ``Mixture of Strategies''
+approach, where different strategies are executed on the same function, and over time
+only those that achieve the best results are kept while the others are discarded.
 
 \section{Individual members contribution}
 
-For the individual contributions, we divided as such:
+For the individual contributions, we divided the work as follows:
 \begin{itemize}
-    \item Alessio and Jacopo read the paper of Map elits, and found it was not applicable to this work.  
-    \item Jacopo Researched the litterature and found the novelty search approach, together with other possible approches.
-    \item Alessio implemented the code that measured the coverage and integrated our project with coverage.py
-    \item Luca was responsible for the generation of the graphs and the analytic part
-    \item Luca and Alessio worked on the test runner that executed multiple tests using multithreading
-    \item All together we worked on the genetic algorithm implementation, some implementing the outlines, or the different adapter types, or simply testing different values and appraches.
+    \item Alessio and Jacopo read the paper on MAP-Elites and found it was not applicable to this work.
+    \item Jacopo researched the literature and identified the novelty search approach, together with other possible approaches.
+    \item Alessio implemented the code that measured the coverage and integrated our project with coverage.py.
+    \item Luca was responsible for the generation of the graphs and the analytics.
+    \item Luca and Alessio worked on the test runner that executed multiple tests using multithreading.
+    \item All together, we worked on the genetic algorithm implementation: some implemented the outlines or the different adapter types, while others tested different values and approaches.
 \end{itemize}
 
 \ifCLASSOPTIONcaptionsoff
