@@ -126,7 +126,7 @@ with custom types).
 Our implementation of the type adapters is recursive, meaning
 that when we define the adapter for \textit{list} we automatically
 get the adapters for all the specialized types such as \textit{list[int]},
-	extit{list[bool]}, \textit{list[list[float]]} etc.
+\textit{list[bool]}, \textit{list[list[float]]} etc.
 
 \label{sec:type_adapter}
 
@@ -170,7 +170,7 @@ To do so we had two options:
 \end{itemize}
 
 Both techniques were valid; we decided to use the first one for
-our work. We tested various selection/replacement strategies,
+our work, and we named it ``input bag''. We tested various selection/replacement strategies,
 and we found that, by far, the most important aspect was to
 use elitism (which makes sense given the highly non-linear
 nature of the problem).
@@ -227,7 +227,7 @@ A = True
 if C1:
     A = False
 if A and C2:
-    to_something()
+    do_something()
 \end{lstlisting}
 
 
@@ -310,14 +310,18 @@ While testing the applications, we developed two pathological functions to test 
     \item \textbf{count\_bool:} this function takes a large number of boolean inputs and counts how many true values are present until the first false. We implemented it as a deep succession of if statements (code \href{https://github.com/lucaSartore/genetic-fuzzing-py/blob/main/src/dataset/output/count_bool20.py}{here}).
     \item \textbf{is\_odd\_for\_dummies:} this function takes an integer as input and has a long succession of if statements; each handles a particular integer, returning True if it is odd and False otherwise (code \href{https://github.com/lucaSartore/genetic-fuzzing-py/blob/main/src/dataset/output/is_odd_for_dummys.py}{here}).
 \end{itemize}
-The first function is very deep: to score a high output, all previous conditions must evaluate to True. Crafting an input that goes deep into the function is easier when done progressively (using evolution) instead of in one shot (using random input). We can see the results in plot~\ref{fig:combined_count_bool_is_odd}. In the second case the function is very shallow, because to reach a particular branch the algorithm must generate an exact value, without any previous information to build it. This favors exploration over exploitation, reducing Novelty Search's advantage (as shown in plot~\ref{fig:combined_count_bool_is_odd}).
+The first function is very deep: to score a high output, all previous conditions must evaluate to True. Crafting an input that goes deep into the function is easier when done progressively (using evolution) instead of in one shot (using random input). We can see the results in plot~\ref{fig:combined_count_bool_is_odd}.
 
-
+In the second case the function is very shallow, because to reach a particular branch the algorithm must generate an exact value, without any previous information to build it. This favors exploration over exploitation, reducing Novelty Search's advantage (as shown again in plot~\ref{fig:combined_count_bool_is_odd}).
 
 
 
 \subsection{The implications of the No Free Lunch Theorem}
-In our setup, we decided to test general arbitrary functions, since potentially each computable problem can be encoded in a function to test. Because of this, it is a fitting application for the No Free Lunch Theorem, which states that each optimization algorithm will perform on average the same over the space of all possible problems. This observation aligns with the discussion in section \ref{sub:count_bool_vs_is_odd}.
+In our setup, we decided to test general arbitrary functions.
+A ``function'' is perhaps one of the most generic construct in programming, and can encode unlimited problems
+
+Because of this, it is a fitting application for the No Free Lunch Theorem, which states that each optimization algorithm will perform on average the same over the space of all possible problems. This observation aligns with the discussion in section \ref{sub:count_bool_vs_is_odd}.
+
 
 \subsection{Limitations of Coverage.py}
 \label{sec:coverage_limitations}
@@ -412,7 +416,7 @@ For the individual contributions, we divided the work as follows:
     \item Jacopo researched the literature and identified the novelty search approach, together with other possible approaches.
     \item Alessio implemented the code that measured the coverage and integrated our project with coverage.py.
     \item Luca was responsible for the generation of the graphs and the analytics.
-    \item Luca and Alessio worked on the test runner that executed multiple tests using multithreading.
+    \item Luca and Alessio worked on the multithreaded test runner
     \item All together, we worked on the genetic algorithm implementation: some implemented the outlines or the different adapter types, while others tested different values and approaches.
 \end{itemize}
 
