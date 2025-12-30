@@ -1,4 +1,3 @@
-
 \documentclass[journal]{IEEEtran}
 \hyphenation{op-tical net-works semi-conduc-tor}
 
@@ -297,12 +296,6 @@ you are interested.
 
 \subsection{A theoretical testcase: count\_bool vs is\_odd\_for\_dummies}
 \label{sub:count_bool_vs_is_odd}
-While testing the applications, we developed two pathological functions, in order to test the theoretical strengths for each implementation.
-\begin{itemize}
-    \item \textbf{count\_bool:} this function that takes a large amount of boolean inputs, and counts of many true values are present until the first false. We implemented it as a deep succession of if's. (code \href{https://github.com/lucaSartore/genetic-fuzzing-py/blob/main/src/dataset/output/count_bool20.py}{here}).
-    \item \textbf{is\_odd\_for\_dummies:} this function takes an integer in input, and it has a large succession of if's, and each if handles a particular integer, returning true if it is odd, false otherwise. (code \href{https://github.com/lucaSartore/genetic-fuzzing-py/blob/main/src/dataset/output/is_odd_for_dummys.py}{here}).
-\end{itemize}
-The first function is very deep, in the sense that to score an high output, all the previous condition must evaluate to true, crafting an input that goes deep in to the function easier to do when done progressively (using evolution) instead of doing it one shot (using random input). We can see the results in plot~\ref{fig:combined_count_bool_is_odd}). Instead in the second case the function is very shallow, because to get a particular branch the algorithm must exactly generate a particular value, without any previous information to build it. This advantages exploration over exploitation, reducing the novelty search advantage~(as shown in plot~\ref{fig:combined_count_bool_is_odd}). 
 
 \begin{figure}[H]
 \centering
@@ -310,6 +303,15 @@ The first function is very deep, in the sense that to score an high output, all 
 \caption{count\_bool vs is\_odd\_for\_dummies}
 \label{fig:combined_count_bool_is_odd}
 \end{figure}
+
+While testing the applications, we developed two pathological functions, in order to test the theoretical strengths for each implementation.
+\begin{itemize}
+    \item \textbf{count\_bool:} this function that takes a large amount of boolean inputs, and counts of many true values are present until the first false. We implemented it as a deep succession of if's. (code \href{https://github.com/lucaSartore/genetic-fuzzing-py/blob/main/src/dataset/output/count_bool20.py}{here}).
+    \item \textbf{is\_odd\_for\_dummies:} this function takes an integer in input, and it has a large succession of if's, and each if handles a particular integer, returning true if it is odd, false otherwise. (code \href{https://github.com/lucaSartore/genetic-fuzzing-py/blob/main/src/dataset/output/is_odd_for_dummys.py}{here}).
+\end{itemize}
+The first function is very deep, in the sense that to score an high output, all the previous condition must evaluate to true, crafting an input that goes deep in to the function easier to do when done progressively (using evolution) instead of doing it one shot (using random input). We can see the results in plot~\ref{fig:combined_count_bool_is_odd}). Instead in the second case the function is very shallow, because to get a particular branch the algorithm must exactly generate a particular value, without any previous information to build it. This advantages exploration over exploitation, reducing the novelty search advantage~(as shown in plot~\ref{fig:combined_count_bool_is_odd}). 
+
+
 
 
 
@@ -400,10 +402,19 @@ and givven the implications of the No Free Launch theorem, it will be impossible
 to have a single algorithm that can efficently fuzz-test any kind of fuction.
 To address this limitation it would be interesting to have test a ``Mixture Of Strategies''
 approach, were different strategies are executed in the same function, and over time
-only the one that acieve the best results are kept while the ohter are discarted.
+only the one that acieve the best results are kept while the other are discarted.
 
-\section{Individual }
+\section{Individual members contribution}
 
+For the individual contributions, we divided as such:
+\begin{itemize}
+    \item Alessio and Jacopo read the paper of Map elits, and found it was not applicable to this work.  
+    \item Jacopo Researched the litterature and found the novelty search approach, together with other possible approches.
+    \item Alessio implemented the code that measured the coverage and integrated our project with coverage.py
+    \item Luca was responsible for the generation of the graphs and the analytic part
+    \item Luca and Alessio worked on the test runner that executed multiple tests using multithreading
+    \item All together we worked on the genetic algorithm implementation, some implementing the outlines, or the different adapter types, or simply testing different values and appraches.
+\end{itemize}
 
 \ifCLASSOPTIONcaptionsoff
   \newpage
