@@ -106,7 +106,6 @@ class BranchCoverageTester(CoverageTester):
         if isinstance(args, tuple):
             args = [args]
 
-        # Erase previous data and start fresh
         self._cov.erase()
         self._cov.start()
         try:
@@ -120,15 +119,12 @@ class BranchCoverageTester(CoverageTester):
             pass
             self._cov.stop()
         
-        # Use cached total branches
         total_branches = self._get_total_branches()
         
-        # Get taken branches from arc data - optimize this loop
         arcs = self._cov.get_data().arcs(self.module.__file__)
         if arcs is None:
             branches_taken = []
         else:
-            # Use set comprehension for faster filtering
             total_branches_set = {fr for fr, _ in total_branches}
             branches_taken = [
                 (fr, to) for fr, to in arcs

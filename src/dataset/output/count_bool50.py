@@ -306,3 +306,12 @@ def count_bool(
     return count
 
 EXPORT_FUNCTION = count_bool
+import afl
+import sys
+afl.init()
+try:
+    s=sys.stdin.read()
+    bool_list = [word.lower() == "true" for word in s.split()]
+    EXPORT_FUNCTION(*bool_list)
+except ValueError:
+    pass
